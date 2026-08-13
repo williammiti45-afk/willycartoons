@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,140 +7,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>WillyCartoons – AI Cartoon Studio for AI Cartoon Videos</title>
 <meta name="description" content="WillyCartoons is an AI cartoon studio for creating AI cartoon videos from photos, videos, and ideas.">
-<link rel="canonical" href="https://willycartoons.onrender.com/">
+<link rel="canonical" href="https://willycartoons.com/">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#0b0b12;
-  color:#fff;
-  min-height:100vh;
-}
-
-header{
-  padding:22px 7%;
-  border-bottom:1px solid #292936;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.logo{
-  font-size:28px;
-  font-weight:800;
-}
-
-.logo span{color:#7c5cff}
-
-nav a{
-  color:#ccc;
-  text-decoration:none;
-  margin-left:25px;
-}
-
-.hero{
-  text-align:center;
-  padding:80px 20px 50px;
-}
-
-.hero h1{
-  font-size:52px;
-  margin-bottom:18px;
-}
-
-.hero h1 span{color:#7c5cff}
-
-.hero p{
-  color:#aaa;
-  font-size:19px;
-  max-width:650px;
-  margin:auto;
-  line-height:1.6;
-}
-
-.container{
-  max-width:1000px;
-  margin:0 auto;
-  padding:20px;
-}
-
-.upload-box{
-  background:#15151f;
-  border:1px solid #303040;
-  border-radius:20px;
-  padding:35px;
-  text-align:center;
-  box-shadow:0 15px 50px rgba(0,0,0,.3);
-}
-
-.upload-box h2{
-  margin-bottom:10px;
-}
-
-.upload-box p{
-  color:#999;
-  margin-bottom:25px;
-}
-
-input[type=file]{
-  display:none;
-}
-
-.upload-button{
-  display:inline-block;
-  padding:15px 28px;
-  background:#7c5cff;
-  border-radius:10px;
-  cursor:pointer;
-  font-weight:bold;
-}
-
-.upload-button:hover{
-  background:#6948f0;
-}
-
-#status{
-  margin-top:20px;
-  color:#aaa;
-}
-
-#gallery{
-  margin-top:40px;
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-  gap:20px;
-}
-
-.video-card{
-  background:#15151f;
-  border:1px solid #303040;
-  border-radius:15px;
-  overflow:hidden;
-}
-
-.video-card video{
-  width:100%;
-  display:block;
-  background:#000;
-}
-
-.video-card .info{
-  padding:15px;
-}
-
-.video-card a{
-  color:#9b84ff;
-  text-decoration:none;
-}
-
-footer{
-  text-align:center;
-  padding:50px 20px;
-  color:#777;
-}
+:root{--bg:#07070a;--panel:#0f1016;--panel2:#151621;--text:#faf9ff;--muted:#aaa8b8;--line:rgba(255,255,255,.09);--p:#8b5cf6;--p2:#c084fc;--cyan:#67e8f9;--green:#86efac}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;line-height:1.5;overflow-x:hidden}
+body:before{content:"";position:fixed;inset:0;z-index:-3;background:radial-gradient(900px 500px at 50% -120px,rgba(139,92,246,.26),transparent 70%),radial-gradient(700px 500px at 100% 35%,rgba(103,232,249,.08),transparent 70%)}
+body:after{content:"";position:fixed;inset:0;z-index:-2;opacity:.22;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:64px 64px;mask-image:linear-gradient(#000,transparent 78%)}
+header{position:sticky;top:0;z-index:100;height:78px;padding:0 6%;display:flex;align-items:center;justify-content:space-between;background:rgba(7,7,10,.72);border-bottom:1px solid var(--line);backdrop-filter:blur(22px)}
+.logo{display:flex;align-items:center;height:55px}.logo img{display:block;width:auto;height:auto;max-width:225px;max-height:48px;object-fit:contain}
+nav{display:flex;align-items:center;gap:7px}nav a{color:#c9c7d5;text-decoration:none;font-size:14px;font-weight:650;padding:10px 14px;border-radius:10px}nav a:hover{color:#fff;background:rgba(255,255,255,.07)}
+.nav-cta{background:rgba(139,92,246,.15);border:1px solid rgba(192,132,252,.2);color:#e9ddff!important}
+.hero{position:relative;max-width:1180px;margin:auto;padding:105px 24px 78px;text-align:center}.hero-orb{position:absolute;width:520px;height:300px;left:50%;top:35px;transform:translateX(-50%);background:radial-gradient(ellipse,rgba(139,92,246,.22),transparent 68%);filter:blur(25px);z-index:-1}
+.eyebrow{display:inline-flex;gap:8px;align-items:center;padding:8px 13px;border:1px solid var(--line);background:rgba(255,255,255,.035);border-radius:999px;color:#d8d4e2;font-size:12px;font-weight:700;margin-bottom:24px}.dot{width:7px;height:7px;border-radius:50%;background:var(--green);box-shadow:0 0 14px rgba(134,239,172,.8)}
+.hero h1{font-size:clamp(48px,8vw,92px);letter-spacing:-5px;line-height:.98;font-weight:900;max-width:1000px;margin:auto}.gradient{background:linear-gradient(100deg,#fff 10%,#d8b4fe 47%,#67e8f9 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{max-width:720px;margin:28px auto 0;color:var(--muted);font-size:19px;line-height:1.75}.hero-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:32px}.btn{display:inline-flex;align-items:center;justify-content:center;min-width:160px;padding:14px 22px;border-radius:12px;text-decoration:none;font-weight:750;font-size:14px;transition:.2s}.btn-primary{color:#fff;background:linear-gradient(135deg,#9b6cff,#673be6);box-shadow:0 14px 38px rgba(103,59,230,.32)}.btn-primary:hover{transform:translateY(-2px);filter:brightness(1.08)}.btn-secondary{color:#ddd8e8;border:1px solid var(--line);background:rgba(255,255,255,.04)}.btn-secondary:hover{background:rgba(255,255,255,.08)}
+.hero-showcase{max-width:980px;margin:62px auto 0;padding:8px;border:1px solid rgba(255,255,255,.12);border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.015));box-shadow:0 35px 100px rgba(0,0,0,.45)}.showcase-inner{min-height:270px;border-radius:18px;background:radial-gradient(circle at 30% 20%,rgba(139,92,246,.24),transparent 30%),radial-gradient(circle at 75% 70%,rgba(103,232,249,.12),transparent 28%),linear-gradient(135deg,#12121b,#09090e);display:grid;place-items:center;position:relative;overflow:hidden}.showcase-inner:before{content:"WILLYCARTOONS";position:absolute;font-size:clamp(45px,9vw,110px);font-weight:900;letter-spacing:-6px;color:rgba(255,255,255,.025)}.play{position:relative;width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);backdrop-filter:blur(10px);font-size:25px;padding-left:4px}
+.container{max-width:1180px;margin:auto;padding:0 24px 90px}.section{margin-top:85px}.section-top{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:25px}.section-top h2{font-size:34px;letter-spacing:-1.4px}.section-top p{color:var(--muted);font-size:14px;max-width:500px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.step,.tool-card{background:linear-gradient(145deg,rgba(21,21,31,.96),rgba(12,12,18,.96));border:1px solid var(--line);border-radius:20px;padding:27px;position:relative;overflow:hidden}.step:after,.tool-card:after{content:"";position:absolute;width:130px;height:130px;right:-60px;top:-60px;background:rgba(139,92,246,.14);filter:blur(35px);border-radius:50%}.number{color:#bfa7ff;font-weight:800;font-size:12px;letter-spacing:1px}.step h3{margin:20px 0 8px;font-size:21px}.step p,.tool-card p{color:var(--muted);font-size:14px;line-height:1.7}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}.tool-icon{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:rgba(139,92,246,.13);border:1px solid rgba(192,132,252,.16);font-size:20px}.tool-card h3{margin:20px 0 8px;font-size:18px}
+.studio{padding:8px;border:1px solid rgba(255,255,255,.12);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.06),rgba(255,255,255,.015));box-shadow:0 30px 90px rgba(0,0,0,.4)}.upload-box{position:relative;text-align:center;padding:62px 30px;border-radius:21px;background:radial-gradient(circle at 50% 0,rgba(139,92,246,.16),transparent 45%),#0d0e14;border:1px dashed rgba(192,132,252,.32);overflow:hidden}.upload-icon{width:68px;height:68px;margin:0 auto 20px;border-radius:20px;display:grid;place-items:center;font-size:28px;background:linear-gradient(135deg,rgba(139,92,246,.23),rgba(103,232,249,.09));border:1px solid rgba(192,132,252,.24)}.upload-box h2{font-size:31px;letter-spacing:-1px;margin-bottom:10px}.upload-box p{color:var(--muted);font-size:15px;margin-bottom:27px}.upload-button{display:inline-flex;align-items:center;justify-content:center;min-width:190px;padding:15px 28px;background:linear-gradient(135deg,#9b6cff,#673be6);color:#fff;border-radius:12px;cursor:pointer;font-weight:800;box-shadow:0 14px 38px rgba(103,59,230,.3);transition:.2s}.upload-button:hover{transform:translateY(-2px);filter:brightness(1.08)}#status{margin-top:18px;color:#92909f;font-size:14px}
+#videos{margin-top:0}.video-section{margin-top:85px}#gallery{margin-top:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}.video-card{background:linear-gradient(145deg,#15151f,#0d0e14);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.25);transition:.25s}.video-card:hover{transform:translateY(-5px);border-color:rgba(139,92,246,.45)}.video-card video{width:100%;aspect-ratio:16/9;display:block;background:#000;object-fit:cover}.video-card .info{padding:17px}.video-card a{color:#c4b5fd;text-decoration:none;font-weight:700}.video-card a:hover{color:#fff}
+.cta{margin-top:85px;text-align:center;padding:65px 25px;border-radius:26px;border:1px solid rgba(192,132,252,.16);background:radial-gradient(circle at 50% 0,rgba(139,92,246,.18),transparent 60%),#101017}.cta h2{font-size:38px;letter-spacing:-1.5px}.cta p{color:var(--muted);margin:12px auto 25px;max-width:580px}
+footer{border-top:1px solid var(--line);padding:45px 24px 60px;color:#777486;text-align:center;font-size:13px}
+@media(max-width:900px){.tools{grid-template-columns:repeat(2,1fr)}.steps{grid-template-columns:1fr}.hero h1{letter-spacing:-3px}}
+@media(max-width:650px){header{height:68px;padding:0 17px}.logo img{max-width:155px;max-height:40px}nav a{padding:8px 9px;font-size:12px}.nav-cta{display:none}.hero{padding:75px 18px 55px}.hero h1{font-size:47px;letter-spacing:-2.5px}.hero p{font-size:16px}.container{padding:0 16px 60px}.tools{grid-template-columns:1fr}.section-top{display:block}.section-top p{margin-top:6px}.upload-box{padding:45px 18px}.cta h2{font-size:30px}}
 </style>
 </head>
 
@@ -157,18 +50,37 @@ footer{
 </header>
 
 <section class="hero">
-  <h1>Welcome to <span>WillyCartoons</span></h1>
-  <p>
-    Create and share amazing cartoon videos from your photos,
-    videos and ideas.
-  </p>
+  <div class="hero-orb"></div><div class="eyebrow"><span class="dot"></span> THE CREATIVE HOME FOR CARTOON VIDEOS</div><h1>Turn your ideas into <span>cartoons.</span></h1>
+  <p>WillyCartoons is your creative studio for transforming photos, videos and ideas into entertaining cartoon experiences you can publish and share.</p>
+  <div class="hero-actions"><a class="btn btn-primary" href="#upload">Create a Cartoon</a><a class="btn btn-secondary" href="#videos">Explore Creations</a></div>
+  <div class="hero-showcase"><div class="showcase-inner"><div class="play">▶</div></div></div>
 </section>
 
 <div class="container">
 
-<section class="upload-box" id="upload">
+<section class="section">
+  <div class="section-top"><div><h2>From idea to cartoon</h2><p>A simple creative workflow built around your videos and imagination.</p></div></div>
+  <div class="steps">
+    <div class="step"><span class="number">01 — UPLOAD</span><h3>Bring your content</h3><p>Start with a video you want to transform, animate or share with the WillyCartoons community.</p></div>
+    <div class="step"><span class="number">02 — CREATE</span><h3>Make it memorable</h3><p>Turn ordinary footage into a distinctive cartoon experience using your creative workflow.</p></div>
+    <div class="step"><span class="number">03 — SHARE</span><h3>Publish your creation</h3><p>Put your finished work in the WillyCartoons gallery and share it with others.</p></div>
+  </div>
+</section>
 
-  <h2>Upload Your Cartoon Video</h2>
+<section class="section">
+  <div class="section-top"><div><h2>Built for creators</h2><p>Everything starts with an idea. WillyCartoons gives it a place to live.</p></div></div>
+  <div class="tools">
+    <div class="tool-card"><div class="tool-icon">✦</div><h3>Cartoon Videos</h3><p>Create a home for your animated and cartoon video work.</p></div>
+    <div class="tool-card"><div class="tool-icon">◈</div><h3>Photo to Story</h3><p>Turn still images and concepts into engaging visual ideas.</p></div>
+    <div class="tool-card"><div class="tool-icon">◉</div><h3>Motion & Dance</h3><p>Explore character movement, performance and expressive motion.</p></div>
+    <div class="tool-card"><div class="tool-icon">↗</div><h3>Publish & Share</h3><p>Showcase your creations in a polished, public gallery.</p></div>
+  </div>
+</section>
+
+<section class="section studio">
+<section class="upload-box" id="upload">
+  <div class="upload-icon">✦</div>
+  <h2>Publish your cartoon video</h2>
 
   <p>
     Select an MP4, MOV or WebM video to publish on WillyCartoons.
@@ -190,15 +102,15 @@ footer{
 
 </section>
 
-<section id="videos">
-
-  <h2 style="margin-top:50px;margin-bottom:20px">
-    Latest Videos
-  </h2>
+<section id="videos" class="video-section">
+  <div class="section-top"><div><h2>Latest Creations</h2><p>Discover the newest videos published on WillyCartoons.</p></div></div>
 
   <div id="gallery"></div>
 
 </section>
+</section>
+
+<section class="cta"><h2>Your next cartoon starts here.</h2><p>Bring a photo, a video or an idea — and make something people remember.</p><a class="btn btn-primary" href="#upload">Start Creating</a></section>
 
 </div>
 
