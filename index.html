@@ -419,6 +419,94 @@ footer{
   .cta h2{font-size:31px}
 }
 
+
+/* Professional 3D contact section */
+.contact-section{
+  margin-top:90px;
+  padding:48px 30px;
+  border:1px solid rgba(255,255,255,.20);
+  border-radius:30px;
+  background:
+    radial-gradient(circle at 18% 20%,rgba(34,211,238,.18),transparent 34%),
+    radial-gradient(circle at 82% 75%,rgba(236,72,153,.20),transparent 36%),
+    linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.035));
+  box-shadow:0 30px 90px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter:blur(26px) saturate(150%);
+  -webkit-backdrop-filter:blur(26px) saturate(150%);
+  text-align:center;
+}
+.contact-section h2{
+  font-size:clamp(30px,4vw,46px);
+  letter-spacing:-1.5px;
+  margin-bottom:10px;
+}
+.contact-section > p{
+  color:var(--muted);
+  margin-bottom:30px;
+}
+.contact-grid{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.contact-card{
+  min-width:min(100%,340px);
+  padding:20px 24px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.20);
+  background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.045));
+  box-shadow:0 16px 40px rgba(0,0,0,.28),inset 0 2px 0 rgba(255,255,255,.13);
+  backdrop-filter:blur(18px);
+  transition:.22s;
+}
+.contact-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(103,232,249,.55);
+  box-shadow:0 22px 55px rgba(0,0,0,.34),0 0 28px rgba(34,211,238,.12);
+}
+.contact-label{
+  display:block;
+  color:#cbd5ff;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1.8px;
+  margin-bottom:7px;
+}
+.contact-card a{
+  display:inline-block;
+  text-decoration:none;
+  font-size:clamp(20px,2.5vw,28px);
+  font-weight:950;
+  letter-spacing:.2px;
+  color:#fff;
+  background:linear-gradient(100deg,#67e8f9 0%,#60a5fa 38%,#c084fc 68%,#f9a8d4 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:
+    0 2px 0 rgba(255,255,255,.16),
+    0 5px 0 rgba(80,55,145,.35),
+    0 10px 22px rgba(34,211,238,.20);
+  filter:drop-shadow(0 4px 5px rgba(0,0,0,.55));
+}
+.contact-card.phone a{
+  background:linear-gradient(100deg,#67e8f9,#22d3ee 45%,#60a5fa 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.contact-card.email a{
+  background:linear-gradient(100deg,#fde68a,#f9a8d4 48%,#c084fc 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+@media(max-width:650px){
+  .contact-section{padding:38px 18px}
+  .contact-card{min-width:100%}
+}
+
 </style>
 </head>
 
@@ -432,6 +520,7 @@ footer{
   <nav>
     <a href="#upload">Upload</a>
     <a href="#videos">Videos</a>
+    <a href="#contact">Contact</a>
   </nav>
 </header>
 
@@ -499,6 +588,24 @@ footer{
 <section class="cta"><h2>Your next cartoon starts here.</h2><p>Bring a photo, a video or an idea — and make something people remember.</p><a class="btn btn-primary" href="#upload">Start Creating</a></section>
 
 </div>
+
+<section class="contact-section" id="contact">
+  <h2>Contact WillyCartoons</h2>
+  <p>Have a project, question or collaboration idea? Get in touch directly.</p>
+
+  <div class="contact-grid">
+    <div class="contact-card phone">
+      <span class="contact-label">PHONE / WHATSAPP</span>
+      <a href="tel:+97470747004">+974 70747004</a>
+    </div>
+
+    <div class="contact-card email">
+      <span class="contact-label">EMAIL</span>
+      <a href="mailto:williammiti45@gmail.com">williammiti45@gmail.com</a>
+    </div>
+  </div>
+</section>
+
 
 <footer>
   © 2026 WillyCartoons — AI Cartoon Studio
