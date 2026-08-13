@@ -621,7 +621,7 @@ footer{
       <span id="uploadProgressSize">0 MB / 0 MB</span>
     </div>
     <div class="upload-progress-track">
-      <div id="uploadProgressBar" class="upload-progress-bar"></div>
+      <div id="uploadProgressBar" class="upload-progress-bar" style="width:0%;transition:width .12s linear;"></div>
     </div>
   </div>
 
@@ -717,7 +717,7 @@ fileInput.addEventListener("change", async function(){
 
   statusBox.textContent = "Uploading " + file.name + "...";
 
-  const uploadResult = await uploadVideoWithProgress(file, filePath);
+  const uploadResult = await uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize);
 
   if(uploadResult.error){
     console.error(uploadResult.error);
@@ -767,7 +767,7 @@ function formatBytes(bytes){
   return (bytes / Math.pow(1024,i)).toFixed(i === 0 ? 0 : 2) + " " + units[i];
 }
 
-function uploadVideoWithProgress(file, filePath){
+function uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize){
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
 
