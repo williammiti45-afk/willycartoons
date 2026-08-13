@@ -20,6 +20,9 @@
 <meta content="WillyCartoons – AI Cartoon Studio for AI Cartoon Videos" name="twitter:title"/>
 <meta content="WillyCartoons is an AI cartoon studio for creating AI cartoon videos from photos, videos, and ideas." name="twitter:description"/>
 <meta content="https://willycartoons.com/logo-full.webp" name="twitter:image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
@@ -2086,6 +2089,362 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
   transform:translateY(-2px);
   background:var(--panel-strong);
   border-color:var(--p);
+}
+</style>
+<style id="wc-refined-2026">
+/* ============================================================
+   WillyCartoons — refinement layer
+   Direction: the work is the colour; the interface stays quiet.
+   ============================================================ */
+
+:root{
+  --ink:#0A0C11;
+  --surface:#14171F;
+  --surface-2:#1B1F29;
+  --edge:rgba(255,255,255,.08);
+  --edge-hi:rgba(255,255,255,.16);
+  --accent:#7C5CFF;
+  --accent-soft:rgba(124,92,255,.14);
+
+  --text:#F4F5F7;
+  --muted:#969CAB;
+  --line:rgba(255,255,255,.08);
+  --wc-border:rgba(255,255,255,.08);
+  --wc-border-hi:rgba(255,255,255,.16);
+
+  --r-sm:8px;
+  --r-md:14px;
+  --r-lg:20px;
+  --shadow:0 18px 50px rgba(0,0,0,.45);
+
+  --display:"Space Grotesk",Inter,ui-sans-serif,system-ui,"Segoe UI",Arial,sans-serif;
+  --body:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",
+         "Noto Sans","Noto Sans Arabic","Noto Sans SC","Noto Sans KR",
+         "Noto Sans Devanagari",Arial,sans-serif;
+}
+
+/* ---- Background: six stacked layers down to one calm field ---- */
+body{
+  font-family:var(--body)!important;
+  background:
+    radial-gradient(1100px 700px at 50% -10%,rgba(124,92,255,.10),transparent 70%),
+    #0A0C11!important;
+  color:var(--text)!important;
+  line-height:1.6!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+body:before{content:none!important;}   /* giant centre watermark */
+body:after{content:none!important;}    /* grid overlay */
+
+/* Logo tiles become texture, not pattern */
+.willy-logo-tile{border-color:rgba(255,255,255,.02)!important;}
+.willy-logo-tile::before{opacity:.045!important;}
+@media(max-width:600px){ .willy-logo-tile::before{opacity:.035!important;} }
+
+/* ---- Typography ---- */
+h1,h2,h3,.hero h1,.section-top h2,.cta h2,.upload-box h2,.contact-section h2{
+  font-family:var(--display)!important;
+  font-weight:700!important;
+}
+.hero h1{
+  font-size:clamp(44px,7vw,88px)!important;
+  letter-spacing:-.03em!important;
+  line-height:1.03!important;
+  text-shadow:none!important;
+}
+.hero p{
+  font-size:19px!important;
+  line-height:1.7!important;
+  color:var(--muted)!important;
+  max-width:660px!important;
+}
+.gradient{
+  background:none!important;
+  -webkit-background-clip:border-box!important;
+  background-clip:border-box!important;
+  color:var(--accent)!important;
+}
+.section-top h2,.upload-box h2{
+  font-size:clamp(28px,3.4vw,40px)!important;
+  letter-spacing:-.025em!important;
+}
+.cta h2,.contact-section h2{
+  font-size:clamp(30px,3.8vw,44px)!important;
+  letter-spacing:-.025em!important;
+}
+.step h3,.tool-card h3{
+  font-family:var(--display)!important;
+  font-size:19px!important;
+  font-weight:600!important;
+  letter-spacing:-.01em!important;
+  margin:18px 0 8px!important;
+}
+p,.step p,.tool-card p,.section-top p,.cta p,.contact-section > p{
+  color:var(--muted)!important;
+}
+
+/* Signature: a short accent rule marking every section start */
+.section-top h2::before,
+.cta h2::before,
+.contact-section h2::before,
+.upload-box h2::before{
+  content:"";
+  display:block;
+  width:28px;
+  height:2px;
+  background:var(--accent);
+  margin-bottom:18px;
+  border-radius:2px;
+}
+.cta h2::before,
+.contact-section h2::before,
+.upload-box h2::before{ margin-left:auto; margin-right:auto; }
+
+/* Eyebrow: quieter */
+.eyebrow{
+  background:rgba(255,255,255,.04)!important;
+  border:1px solid var(--edge)!important;
+  border-radius:999px!important;
+  font-size:12px!important;
+  font-weight:600!important;
+  letter-spacing:.08em!important;
+  text-transform:uppercase!important;
+  color:var(--muted)!important;
+  backdrop-filter:none!important;
+  padding:9px 15px!important;
+}
+.dot{background:var(--accent)!important;box-shadow:none!important;width:6px!important;height:6px!important;}
+
+/* ---- Header ---- */
+header{
+  min-height:76px!important;
+  background:rgba(10,12,17,.82)!important;
+  border-bottom:1px solid var(--edge)!important;
+  backdrop-filter:blur(18px)!important;
+  -webkit-backdrop-filter:blur(18px)!important;
+  box-shadow:none!important;
+}
+.logo img{filter:none!important;}
+nav a{
+  font-family:var(--body)!important;
+  font-size:14px!important;
+  font-weight:500!important;
+  color:var(--muted)!important;
+  padding:9px 13px!important;
+  border-radius:var(--r-sm)!important;
+  border:1px solid transparent!important;
+  transition:color .18s ease,background .18s ease!important;
+}
+nav a:hover{
+  color:var(--text)!important;
+  background:rgba(255,255,255,.05)!important;
+  border-color:transparent!important;
+}
+.nav-cta{
+  background:var(--accent-soft)!important;
+  border:1px solid rgba(124,92,255,.34)!important;
+  color:var(--text)!important;
+}
+
+/* ---- Buttons: solid, no glow, no tri-colour gradient ---- */
+.btn,.upload-button{
+  font-family:var(--body)!important;
+  font-weight:600!important;
+  font-size:15px!important;
+  border-radius:var(--r-md)!important;
+  padding:14px 24px!important;
+  transition:transform .18s ease,background .18s ease,border-color .18s ease!important;
+}
+.btn-primary,.upload-button{
+  background:var(--accent)!important;
+  border:1px solid var(--accent)!important;
+  box-shadow:none!important;
+  color:#fff!important;
+}
+.btn-primary:hover,.upload-button:hover{
+  background:#6B4BF0!important;
+  border-color:#6B4BF0!important;
+  transform:translateY(-2px)!important;
+  filter:none!important;
+}
+.btn-secondary{
+  background:transparent!important;
+  border:1px solid var(--edge-hi)!important;
+  color:var(--text)!important;
+  backdrop-filter:none!important;
+}
+.btn-secondary:hover{
+  background:rgba(255,255,255,.05)!important;
+  border-color:rgba(255,255,255,.28)!important;
+  transform:translateY(-2px)!important;
+}
+
+/* ---- Surfaces: one radius, one shadow, hairline edges ---- */
+.step,.tool-card,.video-card,.studio,.cta,.contact-section,.hero-showcase,.upload-box{
+  background:var(--surface)!important;
+  border:1px solid var(--edge)!important;
+  border-radius:var(--r-lg)!important;
+  box-shadow:var(--shadow)!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+/* remove the blurred colour orbs bleeding out of every card */
+.step:after,.tool-card:after{content:none!important;}
+.hero-orb{display:none!important;}
+.showcase-inner:before{color:rgba(255,255,255,.03)!important;letter-spacing:-.04em!important;}
+
+.step,.tool-card{padding:26px!important;}
+.step:hover,.tool-card:hover{
+  border-color:var(--edge-hi)!important;
+  background:var(--surface-2)!important;
+}
+.step,.tool-card{transition:background .2s ease,border-color .2s ease!important;}
+
+.number{
+  color:var(--accent)!important;
+  font-family:var(--body)!important;
+  font-size:11px!important;
+  font-weight:600!important;
+  letter-spacing:.14em!important;
+}
+.tool-icon{
+  background:var(--accent-soft)!important;
+  border:1px solid rgba(124,92,255,.26)!important;
+  border-radius:var(--r-md)!important;
+  box-shadow:none!important;
+  width:46px!important;height:46px!important;
+  font-size:19px!important;
+}
+
+.hero-showcase{padding:8px!important;}
+.showcase-inner{
+  background:linear-gradient(160deg,#161A23,#0E1119)!important;
+  border-radius:var(--r-md)!important;
+}
+.play{
+  background:rgba(255,255,255,.07)!important;
+  border:1px solid var(--edge-hi)!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  width:76px!important;height:76px!important;
+  font-size:24px!important;
+}
+
+.upload-box{
+  background:var(--surface)!important;
+  border:1px dashed rgba(255,255,255,.16)!important;
+  border-radius:var(--r-lg)!important;
+  box-shadow:none!important;
+}
+.upload-icon{
+  background:var(--accent-soft)!important;
+  border:1px solid rgba(124,92,255,.26)!important;
+  border-radius:var(--r-md)!important;
+  box-shadow:none!important;
+  width:64px!important;height:64px!important;
+  font-size:26px!important;
+}
+
+.video-card{overflow:hidden!important;}
+.video-card:hover{
+  transform:translateY(-4px)!important;
+  border-color:rgba(124,92,255,.42)!important;
+  box-shadow:0 24px 60px rgba(0,0,0,.5)!important;
+}
+.video-card a{color:var(--accent)!important;font-weight:600!important;}
+.video-card a:hover{color:var(--text)!important;}
+
+.cta,.contact-section{
+  background:
+    radial-gradient(700px 300px at 50% 0,rgba(124,92,255,.09),transparent 70%),
+    var(--surface)!important;
+  text-align:center!important;
+}
+
+/* Contact cards */
+.contact-card{
+  background:rgba(255,255,255,.03)!important;
+  border:1px solid var(--edge)!important;
+  border-radius:var(--r-md)!important;
+  transition:background .2s ease,border-color .2s ease!important;
+}
+.contact-card:hover{
+  background:rgba(255,255,255,.055)!important;
+  border-color:rgba(124,92,255,.4)!important;
+  transform:none!important;
+}
+.contact-label{
+  color:var(--muted)!important;
+  font-size:11px!important;
+  font-weight:600!important;
+  letter-spacing:.14em!important;
+}
+.contact-card a{font-family:var(--body)!important;font-weight:600!important;}
+
+.back-to-top{
+  background:transparent!important;
+  border:1px solid var(--edge-hi)!important;
+  border-radius:999px!important;
+  color:var(--muted)!important;
+  font-weight:500!important;
+}
+.back-to-top:hover{
+  background:rgba(255,255,255,.05)!important;
+  border-color:rgba(255,255,255,.28)!important;
+  color:var(--text)!important;
+}
+
+footer{
+  border-top:1px solid var(--edge)!important;
+  background:transparent!important;
+  backdrop-filter:none!important;
+  color:#6E7484!important;
+  padding:44px 24px 56px!important;
+}
+
+/* Language menu */
+#wcLanguageButton{
+  border-radius:var(--r-sm)!important;
+  border:1px solid var(--edge)!important;
+  background:rgba(255,255,255,.04)!important;
+  font-family:var(--body)!important;
+  font-size:13px!important;
+  font-weight:500!important;
+  color:var(--muted)!important;
+}
+#wcLanguageButton:hover{color:var(--text)!important;background:rgba(255,255,255,.07)!important;}
+#wcLanguageMenu{
+  border-radius:var(--r-md)!important;
+  border:1px solid var(--edge-hi)!important;
+  background:#12151C!important;
+  box-shadow:var(--shadow)!important;
+}
+
+/* ---- Rhythm ---- */
+.hero{padding:104px 24px 80px!important;}
+.section{margin-top:96px!important;}
+.section-top{margin-bottom:26px!important;}
+
+/* ---- Quality floor ---- */
+a:focus-visible,button:focus-visible,input:focus-visible,label:focus-visible{
+  outline:2px solid var(--accent)!important;
+  outline-offset:3px!important;
+  border-radius:var(--r-sm);
+}
+@media(prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto!important;}
+  *,*::before,*::after{
+    animation-duration:.001ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.001ms!important;
+  }
+}
+@media(max-width:650px){
+  .hero{padding:68px 18px 54px!important;}
+  .hero h1{font-size:clamp(34px,10vw,46px)!important;letter-spacing:-.02em!important;}
+  .section{margin-top:68px!important;}
+  .step,.tool-card{padding:22px!important;}
 }
 </style>
 </head>
