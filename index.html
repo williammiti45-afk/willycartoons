@@ -1838,77 +1838,76 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
   .willy-logo-tile::before{width:60%;height:60%;opacity:.16}
 }
 </style>
-<style id="willy-mobile-only">
+<style id="wc-mobile-only-final">
 @media (max-width:650px){
-
-  /* Keep Videos and Contact immediately accessible in the mobile header. */
-  header nav a[href="#videos"],
-  header nav a[href="#contact"]{
-    display:inline-flex!important;
-    visibility:visible!important;
-    opacity:1!important;
-  }
-
-  header nav{
+  #wcMobileQuickNav{
+    position:fixed!important;
+    left:12px!important;
+    right:12px!important;
+    bottom:12px!important;
+    z-index:9999!important;
     display:flex!important;
-    align-items:center!important;
-    gap:3px!important;
-    overflow-x:auto!important;
-    scrollbar-width:none!important;
-    white-space:nowrap!important;
+    gap:8px!important;
+    padding:8px!important;
+    border:1px solid rgba(255,255,255,.14)!important;
+    border-radius:18px!important;
+    background:rgba(5,7,17,.88)!important;
+    backdrop-filter:blur(18px)!important;
+    -webkit-backdrop-filter:blur(18px)!important;
+    box-shadow:0 14px 45px rgba(0,0,0,.38)!important;
   }
-  header nav::-webkit-scrollbar{display:none}
-
-  header nav a[href="#videos"],
-  header nav a[href="#contact"]{
-    flex:0 0 auto!important;
-    padding:8px 9px!important;
-    font-size:11px!important;
-  }
-
-  /* Video navigation controls live only on mobile. */
-  .wc-mobile-video-controls{
-    position:absolute;
-    left:10px;
-    right:10px;
-    top:10px;
-    z-index:20;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    pointer-events:none;
-  }
-
-  .wc-mobile-video-controls button{
-    pointer-events:auto;
-    width:42px!important;
-    height:42px!important;
-    min-width:42px!important;
-    padding:0!important;
-    border-radius:50%!important;
-    border:1px solid rgba(255,255,255,.28)!important;
-    background:rgba(0,0,0,.68)!important;
+  #wcMobileQuickNav a{
+    flex:1!important;
+    text-align:center!important;
+    text-decoration:none!important;
     color:#fff!important;
-    font-size:24px!important;
+    padding:10px 8px!important;
+    border-radius:12px!important;
+    font-size:12px!important;
+    font-weight:800!important;
+    background:rgba(255,255,255,.07)!important;
+  }
+  #wcMobileQuickNav a:active{transform:scale(.97)}
+  .video-card{position:relative!important}
+  .wc-mobile-player-nav{
+    position:absolute!important;
+    left:10px!important;
+    right:10px!important;
+    top:10px!important;
+    z-index:30!important;
+    display:flex!important;
+    justify-content:space-between!important;
+    align-items:center!important;
+    pointer-events:none!important;
+  }
+  .wc-mobile-player-nav button{
+    pointer-events:auto!important;
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    padding:0!important;
+    border:1px solid rgba(255,255,255,.25)!important;
+    border-radius:50%!important;
+    background:rgba(0,0,0,.70)!important;
+    color:#fff!important;
+    font-size:25px!important;
     line-height:1!important;
     display:grid!important;
     place-items:center!important;
-    box-shadow:0 7px 22px rgba(0,0,0,.30)!important;
   }
-
-  .wc-mobile-video-count{
-    padding:6px 10px;
-    border-radius:999px;
-    color:#fff;
-    background:rgba(0,0,0,.58);
-    border:1px solid rgba(255,255,255,.18);
-    font-size:11px;
-    font-weight:700;
+  .wc-mobile-player-count{
+    padding:6px 11px!important;
+    border-radius:999px!important;
+    color:#fff!important;
+    background:rgba(0,0,0,.65)!important;
+    border:1px solid rgba(255,255,255,.18)!important;
+    font-size:11px!important;
+    font-weight:800!important;
   }
+  body{padding-bottom:78px!important}
 }
-
 @media (min-width:651px){
-  .wc-mobile-video-controls{display:none!important}
+  #wcMobileQuickNav,.wc-mobile-player-nav{display:none!important}
 }
 </style>
 </head>
@@ -2522,9 +2521,9 @@ function addVideo(url,name,filePath){
   card.dataset.filePath = pathKey;
 
   card.innerHTML = `
-    <div class="wc-mobile-video-controls" aria-hidden="false">
+    <div class="wc-mobile-player-nav" aria-label="Video navigation">
       <button type="button" class="wc-mobile-prev" aria-label="Previous video">‹</button>
-      <span class="wc-mobile-video-count">1 / 1</span>
+      <span class="wc-mobile-player-count">1 / 1</span>
       <button type="button" class="wc-mobile-next" aria-label="Next video">›</button>
     </div>
     <video controls playsinline preload="metadata">
@@ -2544,14 +2543,14 @@ function addVideo(url,name,filePath){
   const topButton = card.querySelector(".tile-top-button");
   const mobilePrev = card.querySelector(".wc-mobile-prev");
   const mobileNext = card.querySelector(".wc-mobile-next");
-  const mobileCount = card.querySelector(".wc-mobile-video-count");
+  const mobileCount = card.querySelector(".wc-mobile-player-count");
 
-  function mobileCards(){
+  function mobileVideoCards(){
     return Array.from(gallery.querySelectorAll(".video-card"));
   }
 
-  function updateMobileControls(){
-    const cards = mobileCards();
+  function updateMobileVideoControls(){
+    const cards = mobileVideoCards();
     const index = cards.indexOf(card);
     if(mobileCount){
       mobileCount.textContent =
@@ -2561,12 +2560,11 @@ function addVideo(url,name,filePath){
     if(mobileNext) mobileNext.disabled = index < 0 || index >= cards.length - 1;
   }
 
-  function goToMobileVideo(direction){
+  function openMobileVideo(offset){
     if(window.innerWidth > 650) return;
-
-    const cards = mobileCards();
+    const cards = mobileVideoCards();
     const index = cards.indexOf(card);
-    const targetIndex = index + direction;
+    const targetIndex = index + offset;
     if(targetIndex < 0 || targetIndex >= cards.length) return;
 
     cards.forEach(c => {
@@ -2576,35 +2574,35 @@ function addVideo(url,name,filePath){
 
     const target = cards[targetIndex];
     target.scrollIntoView({behavior:"smooth", block:"center"});
-
-    const targetVideo = target.querySelector("video");
-    if(targetVideo){
-      setTimeout(() => targetVideo.play().catch(() => {}), 300);
+    const targetPlayer = target.querySelector("video");
+    if(targetPlayer){
+      setTimeout(() => targetPlayer.play().catch(() => {}), 350);
     }
   }
 
   if(mobilePrev){
-    mobilePrev.addEventListener("click", e => {
+    mobilePrev.addEventListener("click", function(e){
       e.preventDefault();
       e.stopPropagation();
-      goToMobileVideo(-1);
+      openMobileVideo(-1);
     });
   }
 
   if(mobileNext){
-    mobileNext.addEventListener("click", e => {
+    mobileNext.addEventListener("click", function(e){
       e.preventDefault();
       e.stopPropagation();
-      goToMobileVideo(1);
+      openMobileVideo(1);
     });
   }
 
-  player.addEventListener("play", () => {
+  player.addEventListener("play", function(){
     if(window.innerWidth <= 650){
-      mobileCards().forEach(c => {
+      mobileVideoCards().forEach(c => {
         const v = c.querySelector("video");
         if(v && v !== player) v.pause();
       });
+      window.wcActiveMobileVideoCard = card;
     }
   });
 
@@ -2630,7 +2628,7 @@ function addVideo(url,name,filePath){
   });
 
   gallery.appendChild(card);
-  updateMobileControls();
+  updateMobileVideoControls();
 
   // Apply the current language to controls on this newly-created tile.
   const currentLang = localStorage.getItem("willycartoons-language") || "en";
@@ -2869,66 +2867,79 @@ function init(){
 }
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init):init();
 })();
-</script>
-<script id="willy-mobile-scroll-navigation">
+</script><div id="wcMobileQuickNav" aria-label="Quick navigation">
+  <a href="#videos" data-i18n="videos">Videos</a>
+  <a href="#contact" data-i18n="contact">Contact</a>
+</div>
+<script id="wc-mobile-scroll-video-controller">
 (function(){
-  let lastY = window.scrollY || 0;
-  let lastSwitch = 0;
+  let lastScrollY=window.scrollY||0;
+  let lastSwitchAt=0;
 
-  function getCards(){
-    const gallery=document.getElementById("gallery");
-    return gallery ? Array.from(gallery.querySelectorAll(".video-card")) : [];
+  function isMobile(){return window.innerWidth<=650}
+  function cards(){
+    const g=document.getElementById("gallery");
+    return g ? Array.from(g.querySelectorAll(".video-card")) : [];
   }
-
-  function pauseAllExcept(card){
-    getCards().forEach(c=>{
+  function active(){
+    return cards().find(c=>{
       const v=c.querySelector("video");
-      if(v && c!==card) v.pause();
+      return v && !v.paused && !v.ended;
     });
   }
-
-  function currentPlaying(){
-    return getCards().find(c=>{
+  function pauseOthers(keep){
+    cards().forEach(c=>{
       const v=c.querySelector("video");
-      return v && !v.paused;
+      if(v && c!==keep) v.pause();
     });
   }
+  function switchVideo(index){
+    const list=cards();
+    if(index<0 || index>=list.length) return false;
+    const target=list[index];
+    pauseOthers(target);
+    target.scrollIntoView({behavior:"smooth",block:"center"});
+    const v=target.querySelector("video");
+    if(v) setTimeout(()=>v.play().catch(()=>{}),350);
+    return true;
+  }
+
+  document.addEventListener("play",function(e){
+    if(!isMobile() || !e.target || e.target.tagName!=="VIDEO") return;
+    const c=e.target.closest(".video-card");
+    if(c) pauseOthers(c);
+  },true);
 
   window.addEventListener("scroll",function(){
-    if(window.innerWidth>650) return;
+    if(!isMobile()) return;
 
-    const y=window.scrollY || 0;
-    const direction=y>lastY ? 1 : y<lastY ? -1 : 0;
-    lastY=y;
+    const y=window.scrollY||0;
+    const direction=y>lastScrollY ? 1 : y<lastScrollY ? -1 : 0;
+    lastScrollY=y;
     if(!direction) return;
 
-    const current=currentPlaying();
+    const current=active();
     if(!current) return;
 
     const now=Date.now();
-    if(now-lastSwitch<800) return;
+    if(now-lastSwitchAt<900) return;
 
     const rect=current.getBoundingClientRect();
-    const trigger=window.innerHeight*0.25;
-    const cards=getCards();
-    const index=cards.indexOf(current);
+    const threshold=window.innerHeight*0.25;
+    const list=cards();
+    const index=list.indexOf(current);
 
-    if(direction===1 && rect.bottom<=trigger && index<cards.length-1){
-      const next=cards[index+1];
-      pauseAllExcept(next);
-      next.scrollIntoView({behavior:"smooth",block:"center"});
-      const v=next.querySelector("video");
-      if(v) setTimeout(()=>v.play().catch(()=>{}),300);
-      lastSwitch=now;
+    // Scrolling down: once the current video has moved above the 25% line,
+    // open the next video.
+    if(direction>0 && rect.bottom<=threshold && index<list.length-1){
+      if(switchVideo(index+1)) lastSwitchAt=now;
+      return;
     }
 
-    if(direction===-1 && rect.top>=window.innerHeight-trigger && index>0){
-      const prev=cards[index-1];
-      pauseAllExcept(prev);
-      prev.scrollIntoView({behavior:"smooth",block:"center"});
-      const v=prev.querySelector("video");
-      if(v) setTimeout(()=>v.play().catch(()=>{}),300);
-      lastSwitch=now;
+    // Scrolling up: once the current video has moved below the 75% line,
+    // open the previous video.
+    if(direction<0 && rect.top>=window.innerHeight-threshold && index>0){
+      if(switchVideo(index-1)) lastSwitchAt=now;
     }
   },{passive:true});
 })();
