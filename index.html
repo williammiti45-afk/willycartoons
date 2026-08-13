@@ -1316,43 +1316,31 @@ async function loadSupabaseVideoLibrary(){
 
 function addVideo(url,name,filePath){
 
-  // Prevent duplicate cards during synchronization.
-  const existing = gallery.querySelector(
-    `.video-card[data-file-path="${CSS.escape(filePath || "")}"]`
-  );
-  if(existing) existing.remove();
+  const pathKey = filePath || name || url;
+
+  // Never create two cards for the same Supabase object.
+  const oldCard = Array.from(
+    gallery.querySelectorAll(".video-card")
+  ).find(card => card.dataset.filePath === pathKey);
+
+  if(oldCard) oldCard.remove();
 
   const card = document.createElement("div");
   card.className = "video-card";
-  card.dataset.filePath = filePath || "";
+  card.dataset.filePath = pathKey;
 
   card.innerHTML = `
     <video controls playsinline preload="metadata">
-      <source src="${url}" type="video/mp4">
-      Your browser could not load this video.
+      <source src="${url}">
     </video>
-
     <div class="info">
       <strong>${escapeHtml(name)}</strong>
       <br><br>
       <a href="${url}" target="_blank" rel="noopener">Open video</a>
-      <button class="admin-delete-video" type="button" style="
-        display:none;
-        margin-top:14px;
-        width:100%;
-        padding:10px 14px;
-        border:0;
-        border-radius:10px;
-        background:linear-gradient(90deg,#ef4444,#dc2626);
-        color:#fff;
-        font-weight:800;
-        cursor:pointer;
-      ">Delete video</button>
     </div>
   `;
 
   const player = card.querySelector("video");
-  const deleteBtn = card.querySelector(".admin-delete-video");
 
   player.addEventListener("loadedmetadata", function(){
     if(this.videoWidth && this.videoHeight){
@@ -1361,63 +1349,17 @@ function addVideo(url,name,filePath){
     }
   });
 
+  // A deleted/private/missing/broken object must never leave a dead tile.
   player.addEventListener("error", function(){
+    player.pause();
+    player.removeAttribute("src");
+    player.querySelectorAll("source").forEach(s => s.removeAttribute("src"));
+    player.load();
     card.remove();
     showEmptyGalleryIfNeeded();
   });
 
-  deleteBtn.addEventListener("click", async function(){
-    const { data:sessionData } =
-      await supabaseClient.auth.getSession();
-
-    const user =
-      sessionData.session ? sessionData.session.user : null;
-
-    if(!user || !user.email ||
-       user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
-      statusBox.textContent = "Administrator sign-in required.";
-      return;
-    }
-
-    if(!filePath) return;
-
-    deleteBtn.disabled = true;
-    deleteBtn.textContent = "Deleting...";
-
-    const { error } =
-      await supabaseClient
-        .storage
-        .from(BUCKET)
-        .remove([filePath]);
-
-    if(error){
-      console.error(error);
-      deleteBtn.disabled = false;
-      deleteBtn.textContent = "Delete video";
-      statusBox.textContent =
-        "Delete failed: " + error.message;
-      return;
-    }
-
-    // Remove the card immediately; then confirm from Supabase.
-    card.remove();
-    showEmptyGalleryIfNeeded();
-    statusBox.textContent = "Video deleted successfully.";
-
-    await loadVideosFromSupabase();
-  });
-
-  gallery.prepend(card);
-
-  supabaseClient.auth.getSession().then(({data}) => {
-    const user =
-      data.session ? data.session.user : null;
-
-    if(user && user.email &&
-       user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()){
-      deleteBtn.style.display = "block";
-    }
-  });
+  gallery.appendChild(card);
 }
 
 function showEmptyGalleryIfNeeded(){
@@ -1455,18 +1397,24 @@ async function loadVideosFromSupabase(){
     }
 
     const validFiles = (files || []).filter(
-      file => file.name && file.id !== null
+      file => file.name && file.id !== null &&
+              /\.(mp4|webm|mov|m4v)$/i.test(file.name)
     );
 
-    const existingCards =
-      Array.from(gallery.querySelectorAll(".video-card"));
+    const validPaths = new Set(validFiles.map(file => file.name));
 
-    const validPaths =
-      new Set(validFiles.map(file => file.name));
-
-    // Remove cards whose Supabase objects no longer exist.
-    existingCards.forEach(card => {
-      if(!validPaths.has(card.dataset.filePath)){
+    // Supabase is the source of truth. Remove every card whose file
+    // no longer exists in Storage.
+    gallery.querySelectorAll(".video-card").forEach(card => {
+      const path = card.dataset.filePath || "";
+      if(!validPaths.has(path)){
+        const player = card.querySelector("video");
+        if(player){
+          player.pause();
+          player.removeAttribute("src");
+          player.querySelectorAll("source").forEach(s => s.removeAttribute("src"));
+          player.load();
+        }
         card.remove();
       }
     });
@@ -1476,15 +1424,12 @@ async function loadVideosFromSupabase(){
       return;
     }
 
-    const currentPaths =
-      new Set(
-        Array.from(gallery.querySelectorAll(".video-card"))
-          .map(card => card.dataset.filePath)
-      );
+    const currentPaths = new Set(
+      Array.from(gallery.querySelectorAll(".video-card"))
+        .map(card => card.dataset.filePath)
+    );
 
-    // Add only videos not already displayed.
     for(const file of validFiles){
-
       if(currentPaths.has(file.name)) continue;
 
       const { data:urlData } =
@@ -1495,16 +1440,11 @@ async function loadVideosFromSupabase(){
 
       if(!urlData || !urlData.publicUrl) continue;
 
-      // Cache-bust the media URL when the stored object changes.
       const cacheKey =
         file.updated_at || file.created_at || Date.now();
 
-      const playbackUrl =
-        urlData.publicUrl + "?v=" +
-        encodeURIComponent(cacheKey);
-
       addVideo(
-        playbackUrl,
+        urlData.publicUrl + "?v=" + encodeURIComponent(cacheKey),
         file.name,
         file.name
       );
@@ -1532,7 +1472,7 @@ loadVideosFromSupabase();
 refreshAdminUI().then(() => loadSupabaseVideoLibrary());
 
 // Keep the public gallery synchronized with Supabase.
-setInterval(loadVideosFromSupabase, 15000);
+setInterval(loadVideosFromSupabase, 5000);
 setInterval(loadSupabaseVideoLibrary, 30000);
 </script>
 
