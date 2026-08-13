@@ -1837,83 +1837,7 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
   #willyLogoTileLayer{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:145px;gap:12px;padding:12px}
   .willy-logo-tile::before{width:60%;height:60%;opacity:.16}
 }
-</style>
-<style id="willy-mobile-video-navigation">
-@media (max-width:650px){
-  header nav a[href="#videos"],
-  header nav a[href="#contact"]{
-    display:inline-flex!important;
-    visibility:visible!important;
-    opacity:1!important;
-  }
-
-  /* Compact quick-nav row; does not affect desktop. */
-  header nav{
-    gap:4px!important;
-  }
-  header nav a[href="#videos"],
-  header nav a[href="#contact"]{
-    padding:8px 9px!important;
-    font-size:11px!important;
-    white-space:nowrap!important;
-  }
-
-  .video-card{
-    position:relative!important;
-  }
-
-  .mobile-video-nav{
-    position:absolute!important;
-    left:10px!important;
-    right:10px!important;
-    top:10px!important;
-    z-index:8!important;
-    display:flex!important;
-    justify-content:space-between!important;
-    align-items:center!important;
-    pointer-events:none!important;
-  }
-
-  .mobile-video-nav button{
-    pointer-events:auto!important;
-    width:42px!important;
-    height:42px!important;
-    min-width:42px!important;
-    padding:0!important;
-    border:1px solid rgba(255,255,255,.28)!important;
-    border-radius:50%!important;
-    background:rgba(5,7,17,.72)!important;
-    color:#fff!important;
-    font-size:22px!important;
-    line-height:1!important;
-    display:grid!important;
-    place-items:center!important;
-    box-shadow:0 8px 22px rgba(0,0,0,.28)!important;
-    backdrop-filter:blur(10px)!important;
-    -webkit-backdrop-filter:blur(10px)!important;
-  }
-
-  .mobile-video-nav button:active{
-    transform:scale(.94);
-  }
-
-  .mobile-video-position{
-    color:#fff!important;
-    background:rgba(5,7,17,.62)!important;
-    border:1px solid rgba(255,255,255,.16)!important;
-    border-radius:999px!important;
-    padding:6px 10px!important;
-    font-size:11px!important;
-    font-weight:700!important;
-    backdrop-filter:blur(10px)!important;
-  }
-}
-
-@media (min-width:651px){
-  .mobile-video-nav{display:none!important;}
-}
-</style>
-</head>
+</style></head>
 <body><div id="willyLogoTileLayer" aria-hidden="true"><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div></div>
 <header>
 <div class="logo">
@@ -2524,11 +2448,6 @@ function addVideo(url,name,filePath){
   card.dataset.filePath = pathKey;
 
   card.innerHTML = `
-    <div class="mobile-video-nav" aria-label="Video navigation">
-      <button type="button" class="mobile-video-prev" aria-label="Previous video">‹</button>
-      <span class="mobile-video-position">1 / 1</span>
-      <button type="button" class="mobile-video-next" aria-label="Next video">›</button>
-    </div>
     <video controls playsinline preload="metadata">
       <source src="${url}">
     </video>
@@ -2544,78 +2463,6 @@ function addVideo(url,name,filePath){
 
   const player = card.querySelector("video");
   const topButton = card.querySelector(".tile-top-button");
-  const mobilePrev = card.querySelector(".mobile-video-prev");
-  const mobileNext = card.querySelector(".mobile-video-next");
-  const mobilePosition = card.querySelector(".mobile-video-position");
-
-  function getMobileVideoCards(){
-    return Array.from(gallery.querySelectorAll(".video-card"));
-  }
-
-  function updateMobileVideoPosition(){
-    const cards = getMobileVideoCards();
-    const index = cards.indexOf(card);
-    if(mobilePosition){
-      mobilePosition.textContent =
-        (index >= 0 ? index + 1 : 1) + " / " + Math.max(cards.length,1);
-    }
-    if(mobilePrev) mobilePrev.disabled = index <= 0;
-    if(mobileNext) mobileNext.disabled = index < 0 || index >= cards.length - 1;
-  }
-
-  function goToMobileVideo(direction, playIt){
-    const cards = getMobileVideoCards();
-    const index = cards.indexOf(card);
-    const targetIndex = index + direction;
-    if(targetIndex < 0 || targetIndex >= cards.length) return;
-
-    cards.forEach(c => {
-      const v = c.querySelector("video");
-      if(v && c !== cards[targetIndex]) v.pause();
-    });
-
-    const target = cards[targetIndex];
-    target.scrollIntoView({behavior:"smooth",block:"center"});
-    const targetVideo = target.querySelector("video");
-    if(targetVideo && playIt){
-      setTimeout(() => {
-        targetVideo.play().catch(() => {});
-      }, 280);
-    }
-    setTimeout(() => {
-      cards.forEach(c => {
-        const v = c.querySelector("video");
-        if(v && c !== target) v.pause();
-      });
-    }, 350);
-  }
-
-  if(mobilePrev){
-    mobilePrev.addEventListener("click", function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      goToMobileVideo(-1, true);
-    });
-  }
-
-  if(mobileNext){
-    mobileNext.addEventListener("click", function(e){
-      e.preventDefault();
-      e.stopPropagation();
-      goToMobileVideo(1, true);
-    });
-  }
-
-  player.addEventListener("play", function(){
-    // Mobile: only one video is allowed to play at a time.
-    if(window.innerWidth <= 650){
-      getMobileVideoCards().forEach(c => {
-        const v = c.querySelector("video");
-        if(v && v !== player) v.pause();
-      });
-      window.willyActiveMobileVideo = card;
-    }
-  });
 
   topButton.addEventListener("click", function(){
     window.scrollTo({top:0, behavior:"smooth"});
@@ -2639,7 +2486,6 @@ function addVideo(url,name,filePath){
   });
 
   gallery.appendChild(card);
-  updateMobileVideoPosition();
 
   // Apply the current language to controls on this newly-created tile.
   const currentLang = localStorage.getItem("willycartoons-language") || "en";
@@ -2761,108 +2607,6 @@ function escapeHtml(text){
   return div.innerHTML;
 }
 
-
-
-<script id="willy-mobile-video-scroll-controller">
-(() => {
-  let lastY = window.scrollY || 0;
-  let lastSwitch = 0;
-  let activeCard = null;
-
-  function cards(){
-    const gallery = document.getElementById("gallery");
-    return gallery ? Array.from(gallery.querySelectorAll(".video-card")) : [];
-  }
-
-  function pauseOthers(keep){
-    cards().forEach(card => {
-      const video = card.querySelector("video");
-      if(video && card !== keep) video.pause();
-    });
-  }
-
-  function updatePositions(){
-    cards().forEach((card,i,arr) => {
-      const pos = card.querySelector(".mobile-video-position");
-      if(pos) pos.textContent = (i+1) + " / " + arr.length;
-      const prev = card.querySelector(".mobile-video-prev");
-      const next = card.querySelector(".mobile-video-next");
-      if(prev) prev.disabled = i===0;
-      if(next) next.disabled = i===arr.length-1;
-    });
-  }
-
-  function switchTo(index, play){
-    const list = cards();
-    if(index < 0 || index >= list.length) return false;
-    const target = list[index];
-    const video = target.querySelector("video");
-    pauseOthers(target);
-    activeCard = target;
-    target.scrollIntoView({behavior:"smooth",block:"center"});
-    if(video && play){
-      setTimeout(() => video.play().catch(()=>{}), 260);
-    }
-    updatePositions();
-    return true;
-  }
-
-  function checkMobileSwipeNavigation(){
-    if(window.innerWidth > 650) return;
-
-    const list = cards();
-    if(!list.length) return;
-
-    const y = window.scrollY || 0;
-    const direction = y > lastY ? 1 : (y < lastY ? -1 : 0);
-    lastY = y;
-    if(!direction) return;
-
-    // Only switch when the current playing card crosses the 25% viewport line.
-    // This prevents a small scroll from unexpectedly jumping to another video.
-    let current = activeCard;
-    if(!current){
-      current = list.find(card => {
-        const v=card.querySelector("video");
-        return v && !v.paused;
-      });
-    }
-    if(!current) return;
-
-    const rect=current.getBoundingClientRect();
-    const trigger=window.innerHeight*0.25;
-    const now=Date.now();
-    if(now-lastSwitch<700) return;
-
-    if(direction>0 && rect.bottom <= trigger){
-      const i=list.indexOf(current);
-      if(switchTo(i+1,true)) lastSwitch=now;
-    }else if(direction<0 && rect.top >= window.innerHeight-trigger){
-      const i=list.indexOf(current);
-      if(switchTo(i-1,true)) lastSwitch=now;
-    }
-  }
-
-  document.addEventListener("play", e => {
-    if(window.innerWidth<=650 && e.target && e.target.tagName==="VIDEO"){
-      const card=e.target.closest(".video-card");
-      if(card){
-        activeCard=card;
-        pauseOthers(card);
-      }
-    }
-  }, true);
-
-  window.addEventListener("scroll",checkMobileSwipeNavigation,{passive:true});
-
-  const observer = new MutationObserver(() => updatePositions());
-  const gallery=document.getElementById("gallery");
-  if(gallery) observer.observe(gallery,{childList:true,subtree:true});
-
-  window.addEventListener("resize",updatePositions,{passive:true});
-  updatePositions();
-})();
-</script>
 
 loadVideosFromSupabase();
 refreshAdminUI().then(() => loadSupabaseVideoLibrary());
