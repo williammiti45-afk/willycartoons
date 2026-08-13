@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -2063,9 +2064,33 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
   }
 }
 </style>
+<style id="back-to-top-style">
+.contact-section{position:relative}
+.back-to-top{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  margin-top:28px;
+  padding:10px 20px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--panel);
+  color:var(--text);
+  text-decoration:none;
+  font-size:14px;
+  font-weight:600;
+  letter-spacing:.02em;
+  transition:transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.back-to-top:hover{
+  transform:translateY(-2px);
+  background:var(--panel-strong);
+  border-color:var(--p);
+}
+</style>
 </head>
-<body><div id="willyLogoTileLayer" aria-hidden="true"><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div></div>
-<header>
+<body><div id="willyLogoTileLayer" aria-hidden="true"></div>
+<header id="top">
 <div class="logo">
 <img alt="WillyCartoons" src="logo-header.webp" width="328" height="128" loading="eager"/>
 </div>
@@ -2187,6 +2212,7 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
 <a href="mailto:williammiti45@gmail.com">williammiti45@gmail.com</a>
 </div>
 </div>
+<a class="back-to-top" href="#top" data-i18n="back_to_top">↑ Back to top</a>
 </section>
 <footer><span data-i18n="footer">
   © 2026 WillyCartoons — AI Cartoon Studio
@@ -3137,6 +3163,49 @@ document.readyState==="loading"?document.addEventListener("DOMContentLoaded",ini
   }else{
     setup();
   }
+})();
+</script>
+<script id="willy-logo-tile-generator">
+(function(){
+  const layer = document.getElementById("willyLogoTileLayer");
+  if (!layer) return;
+
+  function tileConfig(){
+    const w = window.innerWidth;
+    if (w <= 600) return { cols: 2, row: 145, gap: 12, pad: 12 };
+    if (w <= 900) return { cols: 3, row: 180, gap: 16, pad: 16 };
+    return { cols: 4, row: 220, gap: 24, pad: 24 };
+  }
+
+  function buildTiles(){
+    const cfg = tileConfig();
+    const availH = window.innerHeight - cfg.pad * 2;
+    const rows = Math.max(1, Math.ceil((availH + cfg.gap) / (cfg.row + cfg.gap)));
+    const needed = cfg.cols * rows;
+    const current = layer.children.length;
+
+    if (needed > current) {
+      const frag = document.createDocumentFragment();
+      for (let i = current; i < needed; i++) {
+        const tile = document.createElement("div");
+        tile.className = "willy-logo-tile";
+        frag.appendChild(tile);
+      }
+      layer.appendChild(frag);
+    } else if (needed < current) {
+      while (layer.children.length > needed) {
+        layer.removeChild(layer.lastElementChild);
+      }
+    }
+  }
+
+  buildTiles();
+
+  let resizeTimer;
+  window.addEventListener("resize", function(){
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(buildTiles, 150);
+  });
 })();
 </script>
 </body>
