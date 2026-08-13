@@ -2694,6 +2694,191 @@ html[dir="rtl"] .wc-language-menu button.active::after{
   #wcLanguageButton{min-height:38px!important;padding:0 11px!important;gap:7px!important;}
   .wc-language-menu{top:46px!important;min-width:172px!important;}
 }
+/* ============================================================
+   Sticky header fix
+
+   body{overflow-x:hidden} turns the body into a scroll container,
+   which silently kills position:sticky on the header (most visibly
+   on mobile, where it is also set !important). overflow-x:clip
+   contains the same horizontal overflow without creating a scroll
+   container, so the header stays pinned.
+   ============================================================ */
+html{overflow-x:clip!important;}
+body{overflow-x:clip!important;}
+
+header{
+  position:sticky!important;
+  top:0!important;
+  z-index:1000!important;
+  background:rgba(9,11,16,.86)!important;
+  border-bottom:1px solid var(--edge)!important;
+  backdrop-filter:blur(20px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(150%)!important;
+}
+/* A hairline of light along the bottom edge reads as depth while scrolling */
+header::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-1px;
+  height:1px;
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(124,92,255,.35) 30%,
+    rgba(124,92,255,.35) 70%,
+    transparent);
+  pointer-events:none;
+}
+.logo,.wc-language{position:relative!important;z-index:2!important;}
+#wcMobileQuickLinks{
+  position:sticky!important;
+  top:78px!important;
+  z-index:999!important;
+  background:rgba(9,11,16,.86)!important;
+  backdrop-filter:blur(20px)!important;
+  -webkit-backdrop-filter:blur(20px)!important;
+  border-bottom:1px solid var(--edge)!important;
+}
+@media(max-width:420px){ #wcMobileQuickLinks{top:70px!important;} }
+
+/* ============================================================
+   Video tiles
+   ============================================================ */
+#gallery{gap:26px!important;}
+.video-card{
+  position:relative!important;
+  display:flex!important;
+  flex-direction:column!important;
+  background:linear-gradient(180deg,#171B24,#12151C)!important;
+  border:1px solid var(--edge)!important;
+  border-radius:var(--r-lg)!important;
+  box-shadow:0 2px 4px rgba(0,0,0,.3),0 16px 40px rgba(0,0,0,.42)!important;
+  overflow:hidden!important;
+  transition:transform .28s cubic-bezier(.22,1,.36,1),
+             border-color .28s ease,
+             box-shadow .28s ease!important;
+}
+/* Light catching the top edge, the way a raised surface would */
+.video-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);
+  z-index:3;
+  pointer-events:none;
+}
+.video-card:hover{
+  transform:translateY(-5px)!important;
+  border-color:rgba(124,92,255,.38)!important;
+  box-shadow:0 2px 4px rgba(0,0,0,.3),
+             0 26px 60px rgba(0,0,0,.55),
+             0 0 0 1px rgba(124,92,255,.10)!important;
+}
+.video-card video{
+  display:block!important;
+  width:100%!important;
+  background:#000!important;
+  border-bottom:1px solid var(--edge)!important;
+}
+.video-card .info{
+  flex:1 1 auto!important;
+  display:flex!important;
+  flex-direction:column!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.018),transparent)!important;
+}
+.video-card .video-actions{margin-top:auto!important;}
+
+/* ============================================================
+   Contact tiles
+   ============================================================ */
+.contact-grid{
+  display:flex!important;
+  flex-wrap:wrap!important;
+  justify-content:center!important;
+  gap:18px!important;
+  margin-top:34px!important;
+}
+.contact-card{
+  position:relative!important;
+  flex:1 1 260px!important;
+  max-width:330px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:flex-start!important;
+  gap:6px!important;
+  padding:26px 24px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018))!important;
+  border:1px solid var(--edge)!important;
+  border-radius:var(--r-lg)!important;
+  text-align:left!important;
+  overflow:hidden!important;
+  transition:transform .28s cubic-bezier(.22,1,.36,1),
+             border-color .28s ease,
+             background .28s ease!important;
+}
+.contact-card::before{
+  content:"";
+  position:absolute;
+  top:0;left:0;right:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.16),transparent);
+  pointer-events:none;
+}
+/* Channel mark, set from the existing .phone / .email classes */
+.contact-card::after{
+  position:absolute;
+  top:22px;right:22px;
+  font-size:19px;
+  opacity:.28;
+  transition:opacity .28s ease,transform .28s ease;
+}
+.contact-card.phone::after{content:"✆";}
+.contact-card.email::after{content:"✉";}
+.contact-card:hover{
+  transform:translateY(-4px)!important;
+  border-color:rgba(124,92,255,.42)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.025))!important;
+}
+.contact-card:hover::after{opacity:.6;transform:translateY(-2px);}
+.contact-label{
+  display:block!important;
+  color:var(--muted)!important;
+  font-size:10px!important;
+  font-weight:600!important;
+  letter-spacing:.16em!important;
+  text-transform:uppercase!important;
+}
+.contact-card a{
+  display:inline-block!important;
+  font-family:var(--display)!important;
+  font-size:clamp(16px,1.9vw,20px)!important;
+  font-weight:600!important;
+  letter-spacing:-.01em!important;
+  color:var(--text)!important;
+  text-decoration:none!important;
+  word-break:break-word!important;
+  transition:color .2s ease!important;
+}
+.contact-card a:hover{color:var(--accent)!important;}
+/* A rule that grows under the value on hover */
+.contact-card a::after{
+  content:"";
+  display:block;
+  width:0;
+  height:1px;
+  margin-top:4px;
+  background:var(--accent);
+  transition:width .3s cubic-bezier(.22,1,.36,1);
+}
+.contact-card:hover a::after{width:100%;}
+
+html[dir="rtl"] .contact-card{align-items:flex-end!important;text-align:right!important;}
+html[dir="rtl"] .contact-card::after{right:auto;left:22px;}
+
+@media(max-width:600px){
+  .contact-card{flex:1 1 100%!important;max-width:100%!important;padding:22px 20px!important;}
+  #gallery{gap:20px!important;}
+}
 </style>
 </head>
 <body><div id="willyLogoTileLayer" aria-hidden="true"></div>
