@@ -2541,12 +2541,165 @@ a:focus-visible,button:focus-visible,input:focus-visible,label:focus-visible{
   .video-card .tile-top-button{justify-content:center!important;}
   .video-card .video-open{text-align:center!important;}
 }
+/* ---- Logo: larger, with a lit bevel ----
+   drop-shadow() follows the artwork's alpha, so stacking a light edge above
+   and a dark edge below reads as a raised, embossed mark rather than a flat
+   image with a box shadow behind it. Light source sits top-left. */
+header{min-height:96px!important;padding-top:12px!important;padding-bottom:12px!important;}
+.logo{height:auto!important;}
+.logo img{
+  max-width:none!important;
+  max-height:none!important;
+  width:auto!important;
+  height:72px!important;
+  filter:
+    drop-shadow(-1px -1px 0 rgba(255,255,255,.42))
+    drop-shadow(1px 1px 0 rgba(0,0,0,.55))
+    drop-shadow(0 2px 2px rgba(0,0,0,.45))
+    drop-shadow(0 10px 20px rgba(0,0,0,.42))
+    drop-shadow(0 0 26px rgba(124,92,255,.20))!important;
+  transform:translateZ(0);
+  transition:filter .25s ease,transform .25s ease!important;
+}
+.logo img:hover{
+  transform:translateY(-1px)!important;
+  filter:
+    drop-shadow(-1px -1px 0 rgba(255,255,255,.55))
+    drop-shadow(1px 1px 0 rgba(0,0,0,.55))
+    drop-shadow(0 3px 3px rgba(0,0,0,.45))
+    drop-shadow(0 14px 26px rgba(0,0,0,.46))
+    drop-shadow(0 0 32px rgba(124,92,255,.30))!important;
+}
+@media(max-width:700px){
+  header{min-height:78px!important;}
+  .logo img{height:52px!important;}
+}
+@media(max-width:420px){
+  .logo img{height:44px!important;}
+}
+
+/* ---- Language selector ---- */
+#wcLanguageButton{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  min-height:42px!important;
+  padding:0 14px!important;
+  border:1px solid var(--edge)!important;
+  border-radius:999px!important;
+  background:rgba(255,255,255,.035)!important;
+  color:var(--muted)!important;
+  font-family:var(--body)!important;
+  font-size:13px!important;
+  font-weight:500!important;
+  letter-spacing:.01em!important;
+  backdrop-filter:blur(14px)!important;
+  -webkit-backdrop-filter:blur(14px)!important;
+  transition:color .2s ease,background .2s ease,border-color .2s ease!important;
+}
+#wcLanguageButton:hover{
+  color:var(--text)!important;
+  background:rgba(255,255,255,.07)!important;
+  border-color:var(--edge-hi)!important;
+}
+.wc-language.open #wcLanguageButton{
+  color:var(--text)!important;
+  background:rgba(124,92,255,.12)!important;
+  border-color:rgba(124,92,255,.42)!important;
+}
+/* Chevron drawn in CSS so it matches the type, and turns when open */
+#wcLanguageButton::after{
+  content:"";
+  width:7px;height:7px;
+  margin-left:1px;
+  border-right:1.5px solid currentColor;
+  border-bottom:1.5px solid currentColor;
+  transform:rotate(45deg) translate(-1px,-1px);
+  opacity:.55;
+  transition:transform .22s ease,opacity .2s ease;
+}
+.wc-language.open #wcLanguageButton::after{
+  transform:rotate(-135deg) translate(-2px,-2px);
+  opacity:.9;
+}
+#wcLanguageLabel{font-weight:600!important;}
+
+.wc-language-menu{
+  top:52px!important;
+  min-width:194px!important;
+  padding:7px!important;
+  border:1px solid var(--edge-hi)!important;
+  border-radius:var(--r-md)!important;
+  background:rgba(18,21,28,.97)!important;
+  box-shadow:0 24px 60px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05)!important;
+  backdrop-filter:blur(22px) saturate(140%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(140%)!important;
+  transform:translateY(-6px) scale(.985)!important;
+  transition:opacity .2s ease,transform .2s ease,visibility .2s ease!important;
+  max-height:min(66vh,430px)!important;
+  overflow-y:auto!important;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(255,255,255,.16) transparent;
+}
+.wc-language.open .wc-language-menu{transform:translateY(0) scale(1)!important;}
+.wc-language-menu::-webkit-scrollbar{width:8px}
+.wc-language-menu::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.14);
+  border-radius:99px;
+  border:2px solid transparent;
+  background-clip:content-box;
+}
+.wc-language-menu button{
+  display:flex!important;
+  align-items:center!important;
+  gap:10px!important;
+  width:100%!important;
+  padding:10px 12px!important;
+  border:0!important;
+  border-radius:var(--r-sm)!important;
+  background:transparent!important;
+  color:var(--muted)!important;
+  font-family:var(--body)!important;
+  font-size:13px!important;
+  font-weight:500!important;
+  text-align:left!important;
+  transition:background .16s ease,color .16s ease!important;
+}
+.wc-language-menu button:hover{
+  background:rgba(255,255,255,.06)!important;
+  color:var(--text)!important;
+}
+/* Current language: accent tick on the trailing edge */
+.wc-language-menu button.active{
+  background:rgba(124,92,255,.13)!important;
+  color:var(--text)!important;
+  font-weight:600!important;
+}
+.wc-language-menu button.active::after{
+  content:"✓";
+  margin-left:auto;
+  color:var(--accent);
+  font-size:12px;
+  font-weight:700;
+}
+html[dir="rtl"] .wc-language-menu button{
+  text-align:right!important;
+  flex-direction:row-reverse!important;
+}
+html[dir="rtl"] .wc-language-menu button.active::after{
+  margin-left:0;
+  margin-right:auto;
+}
+@media(max-width:700px){
+  #wcLanguageButton{min-height:38px!important;padding:0 11px!important;gap:7px!important;}
+  .wc-language-menu{top:46px!important;min-width:172px!important;}
+}
 </style>
 </head>
 <body><div id="willyLogoTileLayer" aria-hidden="true"></div>
 <header id="top">
 <div class="logo">
-<img alt="WillyCartoons" src="logo-header.webp" width="328" height="128" loading="eager"/>
+<img alt="WillyCartoons" src="logo-header.webp" width="512" height="200" loading="eager"/>
 </div>
 <div class="wc-language" id="wcLanguageSelector"><button aria-expanded="false" aria-haspopup="true" id="wcLanguageButton" type="button">🌐 <span id="wcLanguageLabel">English</span></button><div class="wc-language-menu" id="wcLanguageMenu" role="menu"><button data-language="en" role="menuitem" type="button">🇬🇧 English</button><button data-language="sw" role="menuitem" type="button">🇹🇿 Kiswahili</button><button data-language="zh" role="menuitem" type="button">🇨🇳 中文</button><button data-language="fr" role="menuitem" type="button">🇫🇷 Français</button><button data-language="hi" role="menuitem" type="button">🇮🇳 हिन्दी</button><button data-language="ar" role="menuitem" type="button">🇶🇦 العربية</button><button data-language="es" role="menuitem" type="button">🇪🇸 Español</button><button data-language="ko" role="menuitem" type="button">🇰🇷 한국어</button><button data-language="ru" role="menuitem" type="button">🇷🇺 Русский</button><button data-language="it" role="menuitem" type="button">🇮🇹 Italiano</button><button data-language="de" role="menuitem" type="button">🇩🇪 Deutsch</button><button data-language="nl" role="menuitem" type="button">🇳🇱 Nederlands</button></div></div>
 <nav><a data-i18n="cartoon_tab" href="#cartoons">Cartoons</a>
