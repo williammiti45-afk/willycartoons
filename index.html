@@ -8,7 +8,10 @@
 <title>WillyCartoons – AI Cartoon Studio for AI Cartoon Videos</title>
 <meta name="description" content="WillyCartoons is an AI cartoon studio for creating AI cartoon videos from photos, videos, and ideas.">
 <link rel="canonical" href="https://willycartoons.com/">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+loadVideosFromSupabase();
+
+</script>
 
 <style>
 :root{
@@ -870,6 +873,63 @@ function addVideo(url,name){
   });
 
   gallery.prepend(card);
+}
+
+
+async function loadVideosFromSupabase(){
+
+  try{
+    const { data:files, error } =
+      await supabaseClient
+        .storage
+        .from(BUCKET)
+        .list("", {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: "created_at", order: "desc" }
+        });
+
+    if(error){
+      console.error("Could not load videos:", error);
+      return;
+    }
+
+    if(!files || !files.length){
+      return;
+    }
+
+    // Clear only the gallery's existing placeholder/content.
+    gallery.innerHTML = "";
+
+    for(const file of files){
+
+      // Ignore folders and non-video objects.
+      if(!file.name || file.id === null){
+        continue;
+      }
+
+      const filePath = file.name;
+
+      const { data:urlData, error:urlError } =
+        await supabaseClient
+          .storage
+          .from(BUCKET)
+          .createSignedUrl(filePath, 3600);
+
+      if(urlError){
+        console.error("Could not create playback URL for", filePath, urlError);
+        continue;
+      }
+
+      addVideo(
+        urlData.signedUrl,
+        file.name
+      );
+    }
+
+  }catch(error){
+    console.error("Gallery loading error:", error);
+  }
 }
 
 function escapeHtml(text){
