@@ -2446,6 +2446,101 @@ a:focus-visible,button:focus-visible,input:focus-visible,label:focus-visible{
   .section{margin-top:68px!important;}
   .step,.tool-card{padding:22px!important;}
 }
+/* ---- Video tile footer ---- */
+.video-card .info{
+  padding:16px 18px 18px!important;
+  display:block!important;
+}
+.video-card .video-title{
+  display:block!important;
+  font-family:var(--display)!important;
+  font-size:15px!important;
+  font-weight:600!important;
+  letter-spacing:-.01em!important;
+  color:var(--text)!important;
+  line-height:1.4!important;
+  word-break:break-word;
+}
+.video-card .video-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:12px!important;
+  margin-top:14px!important;
+  padding-top:13px!important;
+  border-top:1px solid var(--edge)!important;
+}
+.video-card .video-open{
+  font-size:13px!important;
+  font-weight:600!important;
+  color:var(--accent)!important;
+  text-decoration:none!important;
+  transition:color .18s ease!important;
+}
+.video-card .video-open:hover{color:var(--text)!important;}
+
+/* Back-to-top: a quiet ghost pill, not a heavy box */
+.video-card .tile-top-button{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:6px!important;
+  margin:0!important;
+  padding:7px 14px!important;
+  border:1px solid var(--edge)!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:var(--muted)!important;
+  font-family:var(--body)!important;
+  font-size:12px!important;
+  font-weight:500!important;
+  letter-spacing:0!important;
+  line-height:1!important;
+  white-space:nowrap!important;
+  cursor:pointer!important;
+  transition:color .18s ease,border-color .18s ease,background .18s ease!important;
+}
+.video-card .tile-top-button:hover{
+  background:rgba(255,255,255,.05)!important;
+  border-color:rgba(124,92,255,.42)!important;
+  color:var(--text)!important;
+  transform:none!important;
+}
+.video-card .tile-top-button:active{transform:translateY(1px)!important;}
+.video-card .tile-top-button span{
+  display:inline-block;
+  transition:transform .18s ease;
+}
+.video-card .tile-top-button:hover span{transform:translateY(-1px);}
+
+/* Sticky header must never cover a video scrolled into view */
+.video-card{scroll-margin-top:96px!important;}
+
+/* Mobile tile navigation, matched to the rest of the interface */
+.wc-mobile-player-nav{
+  background:rgba(255,255,255,.03)!important;
+  border-bottom:1px solid var(--edge)!important;
+}
+.wc-mobile-prev,.wc-mobile-next{
+  background:rgba(255,255,255,.05)!important;
+  border:1px solid var(--edge)!important;
+  color:var(--text)!important;
+  border-radius:999px!important;
+}
+.wc-mobile-player-count{
+  color:var(--muted)!important;
+  font-size:11px!important;
+  letter-spacing:.1em!important;
+}
+
+@media(max-width:420px){
+  .video-card .video-actions{
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:9px!important;
+  }
+  .video-card .tile-top-button{justify-content:center!important;}
+  .video-card .video-open{text-align:center!important;}
+}
 </style>
 </head>
 <body><div id="willyLogoTileLayer" aria-hidden="true"></div>
@@ -3069,12 +3164,11 @@ function addVideo(url,name,filePath){
       <source src="${url}">
     </video>
     <div class="info">
-      <strong>${escapeHtml(name)}</strong>
-      <br><br>
-      <a href="${url}" target="_blank" rel="noopener" data-i18n="open_video"><span data-i18n="open_video">Open video</span></a>
-      <button class="tile-top-button" type="button" aria-label="Back to top" data-i18n="back_to_top">
-        <span data-i18n="back_to_top">↑ Back to top</span>
-      </button>
+      <strong class="video-title">${escapeHtml(name)}</strong>
+      <div class="video-actions">
+        <a class="video-open" href="${url}" target="_blank" rel="noopener"><span data-i18n="open_video">Open video</span></a>
+        <button class="tile-top-button" type="button"><span data-i18n="back_to_top">↑ Back to top</span></button>
+      </div>
     </div>
   `;
 
@@ -3151,6 +3245,13 @@ function addVideo(url,name,filePath){
     e.preventDefault();
     e.stopPropagation();
 
+    // Stop every playing video before leaving the gallery, and mark them
+    // as user-paused so the autoplay observer does not restart them.
+    Array.from(gallery.querySelectorAll("video")).forEach(function(v){
+      v.dataset.wcUserPaused = "1";
+      if(!v.paused) v.pause();
+    });
+
     // Always return to the actual top of the page, never to the
     // middle/position of the current video tile.
     window.scrollTo({
@@ -3188,18 +3289,20 @@ function addVideo(url,name,filePath){
   refreshMobileVideoControls();
 
   // Apply the current language to controls on this newly-created tile.
-  const currentLang = localStorage.getItem("willycartoons-language") || "en";
-  const tileDict = currentLang === "sw"
-    ? {open_video:"Fungua video", back_to_top:"↑ Rudi juu"}
-    : {open_video:"Open video", back_to_top:"↑ Back to top"};
-
-  card.querySelectorAll("[data-i18n]").forEach(el => {
-    const key = el.dataset.i18n;
-    if(tileDict[key]) {
-      el.innerHTML = tileDict[key];
-      el.setAttribute("aria-label", tileDict[key]);
+  // Uses the global dictionary so tiles translate into every supported
+  // language, not just English and Swahili.
+  const tileText = function(key, fallback){
+    if(typeof window.willyT === "function"){
+      const v = window.willyT(key);
+      if(v && v !== key) return v;
     }
+    return fallback;
+  };
+
+  card.querySelectorAll("[data-i18n]").forEach(function(el){
+    el.textContent = tileText(el.dataset.i18n, el.textContent);
   });
+  topButton.setAttribute("aria-label", tileText("back_to_top", "Back to top"));
 }
 
 function showEmptyGalleryIfNeeded(){
@@ -3564,6 +3667,99 @@ document.readyState==="loading"?document.addEventListener("DOMContentLoaded",ini
   window.addEventListener("resize", function(){
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(buildTiles, 150);
+  });
+})();
+</script>
+<script id="wc-video-autoplay">
+/*
+  Scroll-driven playback for the gallery.
+
+  - The video centred in the viewport plays; everything else pauses.
+  - Autoplay starts muted, because browsers block audible autoplay.
+    Viewers unmute with the normal controls, and that choice is kept.
+  - If someone pauses a video by hand, scrolling does not restart it.
+  - Skipped entirely for reduced-motion or Data Saver users.
+*/
+(function(){
+  const gallery = document.getElementById("gallery");
+  if(!gallery || !("IntersectionObserver" in window)) return;
+
+  const reduceMotion = window.matchMedia &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const saveData = navigator.connection && navigator.connection.saveData;
+  const autoplayEnabled = !reduceMotion && !saveData;
+
+  let current = null;          // video we started
+  let programmatic = false;    // suppresses our own pause events
+
+  function pause(video){
+    if(!video || video.paused) return;
+    programmatic = true;
+    video.pause();
+    programmatic = false;
+  }
+
+  function pauseOthers(except){
+    gallery.querySelectorAll("video").forEach(function(v){
+      if(v !== except) pause(v);
+    });
+  }
+
+  function play(video){
+    if(video.dataset.wcUserPaused === "1") return;
+    pauseOthers(video);
+    // Muted is required for autoplay; a viewer who unmutes keeps that state.
+    if(video.dataset.wcUnmuted !== "1") video.muted = true;
+    const p = video.play();
+    if(p && p.catch) p.catch(function(){ /* blocked — leave it paused */ });
+    current = video;
+  }
+
+  const observer = new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      const video = entry.target;
+      if(entry.isIntersecting && entry.intersectionRatio >= 0.6){
+        if(autoplayEnabled) play(video);
+      }else{
+        pause(video);
+        if(current === video) current = null;
+      }
+    });
+  }, { threshold:[0, 0.6, 1], rootMargin:"-10% 0px -10% 0px" });
+
+  function attach(video){
+    if(video.dataset.wcBound === "1") return;
+    video.dataset.wcBound = "1";
+
+    video.setAttribute("playsinline","");
+    video.setAttribute("preload","metadata");
+    if(autoplayEnabled) video.muted = true;
+
+    // A hand pause sticks; a hand play clears it.
+    video.addEventListener("pause", function(){
+      if(!programmatic) video.dataset.wcUserPaused = "1";
+    });
+    video.addEventListener("play", function(){
+      video.dataset.wcUserPaused = "0";
+      pauseOthers(video);
+      current = video;
+    });
+    // Remember an unmute so scrolling back does not silence it again.
+    video.addEventListener("volumechange", function(){
+      if(!video.muted) video.dataset.wcUnmuted = "1";
+    });
+
+    observer.observe(video);
+  }
+
+  function scan(){ gallery.querySelectorAll("video").forEach(attach); }
+
+  scan();
+  new MutationObserver(scan).observe(gallery, { childList:true, subtree:true });
+
+  // Nothing should keep playing once the tab is hidden.
+  document.addEventListener("visibilitychange", function(){
+    if(document.hidden) pauseOthers(null);
   });
 })();
 </script>
