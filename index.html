@@ -694,6 +694,348 @@ body:before{
   cursor:pointer;
 }
 
+
+/* =========================================================
+   WILLYCARTOONS — PROFESSIONAL STUDIO UPGRADE
+   Visual-only enhancement; existing Supabase functionality preserved.
+   ========================================================= */
+
+:root{
+  --wc-max:1320px;
+  --wc-glass:rgba(8,11,26,.62);
+  --wc-glass-2:rgba(255,255,255,.075);
+  --wc-border:rgba(255,255,255,.14);
+  --wc-shadow:0 28px 90px rgba(0,0,0,.36);
+}
+
+body{
+  background:#03050c;
+  letter-spacing:.005em;
+}
+
+/* Cleaner background treatment */
+.ai-video-background video{
+  filter:saturate(1.08) contrast(1.04) brightness(.72);
+}
+.ai-video-overlay{
+  background:
+    linear-gradient(180deg,rgba(2,4,12,.55) 0%,rgba(2,4,12,.34) 38%,rgba(2,4,12,.82) 100%),
+    radial-gradient(circle at 50% 25%,rgba(124,58,237,.13),transparent 42%);
+}
+
+/* Navigation */
+header{
+  min-height:82px !important;
+  padding:10px max(24px,calc((100vw - var(--wc-max))/2)) !important;
+  background:rgba(3,5,12,.62) !important;
+  border-bottom:1px solid rgba(255,255,255,.11) !important;
+  box-shadow:0 14px 50px rgba(0,0,0,.22) !important;
+}
+header:after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(139,92,246,.7),rgba(34,211,238,.55),transparent);
+  opacity:.7;
+}
+.logo img{
+  max-width:250px !important;
+  max-height:58px !important;
+  filter:drop-shadow(0 5px 18px rgba(0,0,0,.6)) !important;
+}
+nav{
+  padding:5px;
+  gap:3px !important;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:16px;
+  background:rgba(255,255,255,.045);
+  backdrop-filter:blur(18px);
+}
+nav a{
+  padding:9px 14px !important;
+  border-radius:11px !important;
+  font-size:13px !important;
+}
+nav a:hover{
+  background:rgba(255,255,255,.10) !important;
+}
+
+/* Hero */
+.hero{
+  max-width:var(--wc-max) !important;
+  padding:112px 24px 70px !important;
+}
+.eyebrow{
+  border-color:rgba(255,255,255,.16) !important;
+  background:rgba(255,255,255,.06) !important;
+  box-shadow:0 12px 35px rgba(0,0,0,.16);
+  text-transform:uppercase;
+  letter-spacing:1.1px;
+}
+.hero h1{
+  max-width:1000px !important;
+  font-size:clamp(54px,7.8vw,98px) !important;
+  letter-spacing:-5px !important;
+  text-wrap:balance;
+}
+.hero h1 span{
+  background:linear-gradient(100deg,#f5d0fe 0%,#c084fc 40%,#67e8f9 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.hero p{
+  max-width:720px !important;
+  font-size:18px !important;
+  color:rgba(231,233,246,.78) !important;
+}
+.hero-actions{
+  margin-top:30px !important;
+}
+.btn{
+  min-width:190px !important;
+  min-height:52px;
+  border-radius:14px !important;
+}
+.btn-primary{
+  box-shadow:0 18px 50px rgba(124,58,237,.30) !important;
+}
+.btn-arrow{
+  margin-left:8px;
+  font-size:17px;
+}
+.hero-trust{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:10px;
+  margin:23px auto 0;
+}
+.hero-trust span{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:8px 12px;
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+  color:rgba(231,233,246,.68);
+  font-size:12px;
+  font-weight:700;
+  backdrop-filter:blur(12px);
+}
+.hero-trust i{
+  font-style:normal;
+  color:#c4b5fd;
+}
+.hero-showcase{
+  max-width:1120px !important;
+  margin:48px auto 0 !important;
+  padding:7px !important;
+  border-radius:28px !important;
+  border-color:rgba(255,255,255,.16) !important;
+  box-shadow:0 45px 120px rgba(0,0,0,.45) !important;
+}
+.showcase-inner{
+  min-height:310px !important;
+  display:flex !important;
+  align-items:flex-end !important;
+  justify-content:space-between !important;
+  padding:34px !important;
+  overflow:hidden;
+  background:
+    linear-gradient(90deg,rgba(3,5,14,.88),rgba(3,5,14,.30)),
+    radial-gradient(circle at 70% 35%,rgba(139,92,246,.34),transparent 35%),
+    radial-gradient(circle at 85% 75%,rgba(34,211,238,.22),transparent 30%),
+    rgba(7,9,22,.75) !important;
+}
+.showcase-inner:before{
+  content:"WILLYCARTOONS" !important;
+  color:rgba(255,255,255,.035) !important;
+  transform:rotate(-5deg);
+}
+.showcase-copy{
+  position:relative;
+  z-index:2;
+  text-align:left;
+}
+.showcase-kicker{
+  display:block;
+  color:#a5b4fc;
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:10px;
+}
+.showcase-copy strong{
+  display:block;
+  font-size:clamp(30px,4.2vw,58px);
+  line-height:1.02;
+  letter-spacing:-2.5px;
+}
+.showcase-caption{
+  display:block;
+  margin-top:12px;
+  color:rgba(231,233,246,.62);
+  font-size:14px;
+}
+.showcase-play{
+  position:relative;
+  z-index:2;
+  width:68px;height:68px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.10);
+  box-shadow:0 15px 45px rgba(0,0,0,.30);
+  backdrop-filter:blur(16px);
+}
+.showcase-play span{margin-left:3px}
+
+/* Content sections */
+.container{
+  max-width:var(--wc-max) !important;
+}
+.section{
+  margin-top:82px !important;
+}
+.section-top{
+  margin-bottom:24px !important;
+}
+.section-top h2{
+  font-size:clamp(28px,3vw,40px) !important;
+  letter-spacing:-1.4px !important;
+}
+.section-top p{
+  color:rgba(231,233,246,.62) !important;
+}
+.step,.tool-card{
+  border-color:rgba(255,255,255,.12) !important;
+  background:linear-gradient(145deg,rgba(255,255,255,.09),rgba(255,255,255,.025)) !important;
+  box-shadow:var(--wc-shadow),inset 0 1px 0 rgba(255,255,255,.06) !important;
+}
+.step:hover,.tool-card:hover{
+  transform:translateY(-5px);
+  border-color:rgba(192,132,252,.34) !important;
+  transition:.22s ease;
+}
+
+/* Studio/admin */
+.studio{
+  border-color:rgba(255,255,255,.14) !important;
+  background:rgba(3,5,14,.48) !important;
+}
+.admin-auth{
+  max-width:760px !important;
+  margin:0 auto 18px !important;
+  background:rgba(7,9,22,.72) !important;
+  border-color:rgba(255,255,255,.13) !important;
+}
+.upload-box{
+  background:
+    radial-gradient(circle at 15% 20%,rgba(139,92,246,.16),transparent 30%),
+    radial-gradient(circle at 85% 75%,rgba(34,211,238,.10),transparent 32%),
+    rgba(7,9,22,.68) !important;
+  border-style:solid !important;
+  border-color:rgba(255,255,255,.14) !important;
+}
+.upload-button{
+  min-height:52px;
+}
+.upload-progress{
+  background:rgba(0,0,0,.22) !important;
+}
+
+/* Gallery */
+#gallery{
+  grid-template-columns:repeat(auto-fill,minmax(300px,1fr)) !important;
+  gap:20px !important;
+}
+.video-card{
+  border-color:rgba(255,255,255,.12) !important;
+  background:rgba(7,9,22,.72) !important;
+  box-shadow:0 22px 65px rgba(0,0,0,.30) !important;
+}
+.video-card:hover{
+  transform:translateY(-5px) !important;
+  border-color:rgba(103,232,249,.28) !important;
+}
+.video-card video{
+  background:#02030a !important;
+}
+.video-card .info{
+  padding:15px 17px 18px !important;
+}
+.video-card .info strong{
+  font-size:14px;
+}
+.video-card .info a{
+  font-size:13px;
+}
+
+/* Contact and footer */
+.contact-section{
+  max-width:var(--wc-max);
+  margin:82px auto 0 !important;
+  padding:56px 24px !important;
+  border-color:rgba(255,255,255,.13) !important;
+  background:rgba(5,7,17,.58) !important;
+}
+.contact-card{
+  border-color:rgba(255,255,255,.12) !important;
+  background:rgba(255,255,255,.055) !important;
+}
+footer{
+  margin-top:70px;
+  background:rgba(2,3,9,.72) !important;
+}
+
+/* Mobile */
+@media(max-width:700px){
+  header{
+    padding:8px 14px !important;
+  }
+  .logo img{
+    max-width:185px !important;
+    max-height:48px !important;
+  }
+  nav{
+    gap:0 !important;
+  }
+  nav a{
+    padding:8px 9px !important;
+    font-size:11px !important;
+  }
+  .hero{
+    padding:82px 17px 52px !important;
+  }
+  .hero h1{
+    font-size:48px !important;
+    letter-spacing:-3px !important;
+  }
+  .hero p{
+    font-size:16px !important;
+  }
+  .hero-trust{
+    gap:7px;
+  }
+  .hero-trust span{
+    font-size:10px;
+    padding:7px 9px;
+  }
+  .hero-showcase{
+    margin-top:34px !important;
+  }
+  .showcase-inner{
+    min-height:245px !important;
+    padding:24px !important;
+  }
+  .showcase-play{
+    width:56px;height:56px;
+  }
+}
+
 </style>
 </head>
 
@@ -723,8 +1065,25 @@ body:before{
 <section class="hero">
   <div class="hero-orb"></div><div class="eyebrow"><span class="dot"></span> THE CREATIVE HOME FOR CARTOON VIDEOS</div><h1>Turn your ideas into <span>cartoons.</span></h1>
   <p>WillyCartoons is your creative studio for transforming photos, videos and ideas into entertaining cartoon experiences you can publish and share.</p>
-  <div class="hero-actions"><a class="btn btn-primary" href="#upload">Create a Cartoon</a><a class="btn btn-secondary" href="#videos">Explore Creations</a></div>
-  <div class="hero-showcase"><div class="showcase-inner"><div class="play">▶</div></div></div>
+  <div class="hero-actions">
+    <a class="btn btn-primary" href="#upload">Create a Cartoon <span class="btn-arrow">↗</span></a>
+    <a class="btn btn-secondary" href="#videos">Explore Creations</a>
+  </div>
+  <div class="hero-trust">
+    <span><i>✦</i> AI-ready workflow</span>
+    <span><i>●</i> Public video gallery</span>
+    <span><i>◈</i> HD & vertical video support</span>
+  </div>
+  <div class="hero-showcase">
+    <div class="showcase-inner">
+      <div class="showcase-copy">
+        <span class="showcase-kicker">WILLYCARTOONS STUDIO</span>
+        <strong>From imagination<br>to motion.</strong>
+        <span class="showcase-caption">Create. Animate. Publish. Share.</span>
+      </div>
+      <div class="showcase-play"><span>▶</span></div>
+    </div>
+  </div>
 </section>
 
 <div class="container">
