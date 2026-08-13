@@ -8,10 +8,7 @@
 <title>WillyCartoons – AI Cartoon Studio for AI Cartoon Videos</title>
 <meta name="description" content="WillyCartoons is an AI cartoon studio for creating AI cartoon videos from photos, videos, and ideas.">
 <link rel="canonical" href="https://willycartoons.com/">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-loadVideosFromSupabase();
-
-</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{
@@ -890,45 +887,52 @@ async function loadVideosFromSupabase(){
         });
 
     if(error){
-      console.error("Could not load videos:", error);
+      console.error("Gallery list error:", error);
+      statusBox.textContent =
+        "Could not load the video gallery.";
       return;
     }
 
-    if(!files || !files.length){
-      return;
-    }
-
-    // Clear only the gallery's existing placeholder/content.
     gallery.innerHTML = "";
+
+    if(!files || files.length === 0){
+      return;
+    }
 
     for(const file of files){
 
-      // Ignore folders and non-video objects.
       if(!file.name || file.id === null){
         continue;
       }
 
       const filePath = file.name;
 
-      const { data:urlData, error:urlError } =
-        await supabaseClient
+      /*
+        The videos bucket is public, so use its permanent public URL.
+        This means another device can load the same video without
+        depending on the uploader's browser session or a temporary URL.
+      */
+      const { data:urlData } =
+        supabaseClient
           .storage
           .from(BUCKET)
-          .createSignedUrl(filePath, 3600);
+          .getPublicUrl(filePath);
 
-      if(urlError){
-        console.error("Could not create playback URL for", filePath, urlError);
+      if(!urlData || !urlData.publicUrl){
+        console.error("No public URL for:", filePath);
         continue;
       }
 
       addVideo(
-        urlData.signedUrl,
+        urlData.publicUrl,
         file.name
       );
     }
 
   }catch(error){
     console.error("Gallery loading error:", error);
+    statusBox.textContent =
+      "Could not load the video gallery.";
   }
 }
 
@@ -942,6 +946,8 @@ function escapeHtml(text){
   return div.innerHTML;
 }
 
+
+loadVideosFromSupabase();
 </script>
 
 </body>
