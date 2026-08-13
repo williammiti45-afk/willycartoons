@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="google-site-verification" content="h_CuIWvfWR6mqcSlzHIsiQB5cccGj6v3wltK1rJWD-g" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WillyCartoons – AI Cartoon Studio for AI Cartoon Videos</title>
+<meta name="description" content="WillyCartoons is an AI cartoon studio for creating AI cartoon videos from photos, videos, and ideas.">
+<link rel="canonical" href="https://willycartoons.com/">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --bg:#050711;
+  --panel:rgba(18,22,42,.48);
+  --panel-strong:rgba(17,21,43,.68);
+  --text:#ffffff;
+  --muted:#c5c8da;
+  --line:rgba(255,255,255,.18);
+  --p:#8b5cf6;
+  --p2:#ec4899;
+  --cyan:#22d3ee;
+  --blue:#3b82f6;
+  --green:#86efac;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:#050711;
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.55;
+  overflow-x:hidden;
+  position:relative;
+}
+body{
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:
+    radial-gradient(700px 600px at 8% 12%,rgba(236,72,153,.30),transparent 68%),
+    radial-gradient(720px 620px at 92% 18%,rgba(59,130,246,.32),transparent 68%),
+    radial-gradient(800px 650px at 52% 78%,rgba(139,92,246,.30),transparent 70%),
+    radial-gradient(600px 500px at 12% 90%,rgba(34,211,238,.20),transparent 70%),
+    linear-gradient(135deg,#050711 0%,#0b1030 48%,#13091f 100%);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.55;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* Large WillyCartoons logo background — black in logo.png is visually removed */
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:url("logo.png") center center / min(900px,72vw) auto no-repeat;
+  opacity:.88;
+  mix-blend-mode:screen;
+}
+
+/* Keep every actual website element above the logo background */
+body > *{
+  position:relative;
+  z-index:1;
+}
+
+body:after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:70px 70px;
+  mask-image:linear-gradient(#000,rgba(0,0,0,.28) 55%,transparent 100%);
+}
+header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  min-height:92px;
+  padding:10px 5%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(5,7,17,.58);
+  border-bottom:1px solid rgba(255,255,255,.14);
+  backdrop-filter:blur(28px) saturate(160%);
+  -webkit-backdrop-filter:blur(28px) saturate(160%);
+  box-shadow:0 12px 45px rgba(0,0,0,.22);
+}
+.logo{display:flex;align-items:center;height:70px}
+.logo img{
+  display:block;
+  width:auto;
+  height:auto;
+  max-width:285px;
+  max-height:64px;
+  object-fit:contain;
+  background:transparent !important;
+  mix-blend-mode:screen;
+  filter:drop-shadow(0 8px 24px rgba(0,0,0,.38));
+}
+nav{display:flex;align-items:center;gap:8px}
+nav a{
+  color:#e4e6f2;
+  text-decoration:none;
+  font-size:15px;
+  font-weight:700;
+  padding:12px 16px;
+  border-radius:14px;
+  border:1px solid transparent;
+  transition:.2s;
+}
+nav a:hover{
+  color:#fff;
+  background:rgba(255,255,255,.10);
+  border-color:rgba(255,255,255,.14);
+}
+.nav-cta{
+  background:linear-gradient(135deg,rgba(139,92,246,.32),rgba(236,72,153,.20));
+  border:1px solid rgba(255,255,255,.22);
+  color:#fff!important;
+}
+.hero{
+  position:relative;
+  max-width:1240px;
+  margin:auto;
+  padding:120px 24px 92px;
+  text-align:center;
+}
+.hero-orb{
+  position:absolute;
+  width:760px;
+  height:430px;
+  left:50%;
+  top:15px;
+  transform:translateX(-50%);
+  background:
+    radial-gradient(ellipse at 30% 50%,rgba(236,72,153,.28),transparent 52%),
+    radial-gradient(ellipse at 72% 45%,rgba(34,211,238,.24),transparent 55%);
+  filter:blur(35px);
+  z-index:-1;
+}
+.eyebrow{
+  display:inline-flex;
+  gap:9px;
+  align-items:center;
+  padding:10px 16px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.075);
+  border-radius:999px;
+  color:#eeeef8;
+  font-size:13px;
+  font-weight:800;
+  margin-bottom:28px;
+  backdrop-filter:blur(18px);
+}
+.dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 18px rgba(134,239,172,.95);
+}
+.hero h1{
+  font-size:clamp(58px,8.5vw,104px);
+  letter-spacing:-6px;
+  line-height:.98;
+  font-weight:950;
+  max-width:1100px;
+  margin:auto;
+  text-shadow:0 12px 55px rgba(0,0,0,.28);
+}
+.gradient{
+  background:linear-gradient(100deg,#fff 8%,#f0abfc 42%,#c084fc 68%,#67e8f9 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+}
+.hero p{
+  max-width:780px;
+  margin:30px auto 0;
+  color:var(--muted);
+  font-size:20px;
+  line-height:1.75;
+}
+.hero-actions{
+  display:flex;
+  justify-content:center;
+  gap:14px;
+  flex-wrap:wrap;
+  margin-top:36px;
+}
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:185px;
+  padding:16px 25px;
+  border-radius:15px;
+  text-decoration:none;
+  font-weight:800;
+  font-size:15px;
+  transition:.22s;
+}
+.btn-primary{
+  color:#fff;
+  background:linear-gradient(135deg,#8b5cf6,#ec4899 58%,#3b82f6);
+  box-shadow:0 18px 50px rgba(139,92,246,.36);
+  border:1px solid rgba(255,255,255,.22);
+}
+.btn-primary:hover{transform:translateY(-3px);filter:brightness(1.08)}
+.btn-secondary{
+  color:#f1f2fb;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(16px);
+}
+.btn-secondary:hover{background:rgba(255,255,255,.14);transform:translateY(-2px)}
+.hero-showcase{
+  max-width:1060px;
+  margin:68px auto 0;
+  padding:9px;
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:30px;
+  background:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.035));
+  box-shadow:0 40px 110px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.15);
+  backdrop-filter:blur(22px) saturate(140%);
+}
+.showcase-inner{
+  min-height:340px;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(236,72,153,.28),transparent 30%),
+    radial-gradient(circle at 80% 65%,rgba(34,211,238,.22),transparent 32%),
+    linear-gradient(135deg,rgba(16,18,42,.72),rgba(7,8,20,.72));
+  display:grid;
+  place-items:center;
+  position:relative;
+  overflow:hidden;
+}
+.showcase-inner:before{
+  content:"WILLYCARTOONS";
+  position:absolute;
+  font-size:clamp(55px,10vw,125px);
+  font-weight:950;
+  letter-spacing:-7px;
+  color:rgba(255,255,255,.045);
+  white-space:nowrap;
+}
+.play{
+  position:relative;
+  width:92px;height:92px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:rgba(255,255,255,.13);
+  border:1px solid rgba(255,255,255,.30);
+  backdrop-filter:blur(18px);
+  font-size:29px;
+  padding-left:5px;
+  box-shadow:0 20px 55px rgba(0,0,0,.28);
+}
+.container{max-width:1240px;margin:auto;padding:0 24px 100px}
+.section{margin-top:100px}
+.section-top{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:28px}
+.section-top h2{font-size:38px;letter-spacing:-1.6px}
+.section-top p{color:var(--muted);font-size:15px;max-width:560px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.step,.tool-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.105),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:24px;
+  padding:31px;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 24px 65px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(24px) saturate(145%);
+  -webkit-backdrop-filter:blur(24px) saturate(145%);
+}
+.step:after,.tool-card:after{
+  content:"";
+  position:absolute;
+  width:180px;height:180px;
+  right:-80px;top:-80px;
+  background:linear-gradient(135deg,rgba(236,72,153,.24),rgba(34,211,238,.16));
+  filter:blur(45px);
+  border-radius:50%;
+}
+.number{color:#d8b4fe;font-weight:850;font-size:12px;letter-spacing:1.2px}
+.step h3{margin:21px 0 9px;font-size:22px}
+.step p,.tool-card p{color:var(--muted);font-size:14px;line-height:1.75}
+.tools{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+.tool-icon{
+  width:52px;height:52px;border-radius:15px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(34,211,238,.14));
+  border:1px solid rgba(255,255,255,.18);
+  font-size:21px;
+  box-shadow:0 10px 30px rgba(139,92,246,.16);
+}
+.tool-card h3{margin:21px 0 9px;font-size:19px}
+.studio{
+  padding:9px;
+  border:1px solid rgba(255,255,255,.20);
+  border-radius:31px;
+  background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.035));
+  box-shadow:0 35px 100px rgba(0,0,0,.40),inset 0 1px 0 rgba(255,255,255,.10);
+  backdrop-filter:blur(26px);
+}
+.upload-box{
+  position:relative;
+  text-align:center;
+  padding:76px 30px;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 25% 15%,rgba(236,72,153,.18),transparent 35%),
+    radial-gradient(circle at 80% 80%,rgba(34,211,238,.15),transparent 35%),
+    rgba(8,10,25,.58);
+  border:1px dashed rgba(255,255,255,.30);
+  overflow:hidden;
+  backdrop-filter:blur(20px);
+}
+.upload-icon{
+  width:78px;height:78px;
+  margin:0 auto 22px;
+  border-radius:22px;
+  display:grid;place-items:center;
+  font-size:31px;
+  background:linear-gradient(135deg,rgba(139,92,246,.30),rgba(236,72,153,.18),rgba(34,211,238,.14));
+  border:1px solid rgba(255,255,255,.22);
+  box-shadow:0 18px 45px rgba(139,92,246,.18);
+}
+.upload-box h2{font-size:36px;letter-spacing:-1.2px;margin-bottom:11px}
+.upload-box p{color:var(--muted);font-size:16px;margin-bottom:29px}
+.upload-button{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:205px;
+  padding:16px 30px;
+  background:linear-gradient(135deg,#8b5cf6,#ec4899,#3b82f6);
+  color:#fff;
+  border-radius:14px;
+  cursor:pointer;
+  font-weight:850;
+  box-shadow:0 18px 48px rgba(139,92,246,.30);
+  transition:.2s;
+  border:1px solid rgba(255,255,255,.22);
+}
+.upload-button:hover{transform:translateY(-3px);filter:brightness(1.08)}
+#status{margin-top:20px;color:#b8bbcc;font-size:14px}
+#videos{margin-top:0}
+.video-section{margin-top:90px}
+#gallery{margin-top:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:22px}
+.video-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.10),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.17);
+  border-radius:21px;
+  overflow:hidden;
+  box-shadow:0 22px 60px rgba(0,0,0,.28);
+  transition:.25s;
+  backdrop-filter:blur(20px);
+}
+.video-card:hover{transform:translateY(-6px);border-color:rgba(192,132,252,.55);box-shadow:0 30px 75px rgba(0,0,0,.35)}
+.video-card video{width:100%;aspect-ratio:16/9;display:block;background:#000;object-fit:cover}
+.video-card .info{padding:18px}
+.video-card a{color:#d8b4fe;text-decoration:none;font-weight:750}
+.video-card a:hover{color:#fff}
+.cta{
+  margin-top:90px;
+  text-align:center;
+  padding:78px 25px;
+  border-radius:29px;
+  border:1px solid rgba(255,255,255,.19);
+  background:
+    radial-gradient(circle at 25% 0,rgba(236,72,153,.20),transparent 40%),
+    radial-gradient(circle at 75% 100%,rgba(34,211,238,.17),transparent 40%),
+    rgba(16,16,31,.48);
+  box-shadow:0 30px 90px rgba(0,0,0,.28);
+  backdrop-filter:blur(25px);
+}
+.cta h2{font-size:42px;letter-spacing:-1.6px}
+.cta p{color:var(--muted);margin:13px auto 28px;max-width:620px}
+footer{
+  border-top:1px solid rgba(255,255,255,.14);
+  padding:50px 24px 65px;
+  color:#9699ad;
+  text-align:center;
+  font-size:13px;
+  background:rgba(4,5,13,.35);
+  backdrop-filter:blur(18px);
+}
+@media(max-width:900px){
+  .tools{grid-template-columns:repeat(2,1fr)}
+  .steps{grid-template-columns:1fr}
+  .hero h1{letter-spacing:-4px}
+}
+@media(max-width:650px){
+  body:before{background-size:520px auto;}
+  header{min-height:74px;padding:8px 15px}
+  .logo{height:54px}
+  .logo img{max-width:205px;max-height:50px}
+  nav a{padding:9px 10px;font-size:12px}
+  .nav-cta{display:none}
+  .hero{padding:80px 18px 60px}
+  .hero h1{font-size:50px;letter-spacing:-2.8px}
+  .hero p{font-size:16px}
+  .container{padding:0 16px 65px}
+  .tools{grid-template-columns:1fr}
+  .section-top{display:block}
+  .section-top h2{font-size:32px}
+  .section-top p{margin-top:7px}
+  .upload-box{padding:52px 18px}
+  .upload-box h2{font-size:30px}
+  .cta h2{font-size:31px}
+}
+
+
+/* Professional 3D contact section */
+.contact-section{
+  margin-top:90px;
+  padding:48px 30px;
+  border:1px solid rgba(255,255,255,.20);
+  border-radius:30px;
+  background:
+    radial-gradient(circle at 18% 20%,rgba(34,211,238,.18),transparent 34%),
+    radial-gradient(circle at 82% 75%,rgba(236,72,153,.20),transparent 36%),
+    linear-gradient(145deg,rgba(255,255,255,.13),rgba(255,255,255,.035));
+  box-shadow:0 30px 90px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.12);
+  backdrop-filter:blur(26px) saturate(150%);
+  -webkit-backdrop-filter:blur(26px) saturate(150%);
+  text-align:center;
+}
+.contact-section h2{
+  font-size:clamp(30px,4vw,46px);
+  letter-spacing:-1.5px;
+  margin-bottom:10px;
+}
+.contact-section > p{
+  color:var(--muted);
+  margin-bottom:30px;
+}
+.contact-grid{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  flex-wrap:wrap;
+}
+.contact-card{
+  min-width:min(100%,340px);
+  padding:20px 24px;
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.20);
+  background:linear-gradient(145deg,rgba(255,255,255,.12),rgba(255,255,255,.045));
+  box-shadow:0 16px 40px rgba(0,0,0,.28),inset 0 2px 0 rgba(255,255,255,.13);
+  backdrop-filter:blur(18px);
+  transition:.22s;
+}
+.contact-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(103,232,249,.55);
+  box-shadow:0 22px 55px rgba(0,0,0,.34),0 0 28px rgba(34,211,238,.12);
+}
+.contact-label{
+  display:block;
+  color:#cbd5ff;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1.8px;
+  margin-bottom:7px;
+}
+.contact-card a{
+  display:inline-block;
+  text-decoration:none;
+  font-size:clamp(20px,2.5vw,28px);
+  font-weight:950;
+  letter-spacing:.2px;
+  color:#fff;
+  background:linear-gradient(100deg,#67e8f9 0%,#60a5fa 38%,#c084fc 68%,#f9a8d4 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+  text-shadow:
+    0 2px 0 rgba(255,255,255,.16),
+    0 5px 0 rgba(80,55,145,.35),
+    0 10px 22px rgba(34,211,238,.20);
+  filter:drop-shadow(0 4px 5px rgba(0,0,0,.55));
+}
+.contact-card.phone a{
+  background:linear-gradient(100deg,#67e8f9,#22d3ee 45%,#60a5fa 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.contact-card.email a{
+  background:linear-gradient(100deg,#fde68a,#f9a8d4 48%,#c084fc 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+@media(max-width:650px){
+  .contact-section{padding:38px 18px}
+  .contact-card{min-width:100%}
+}
+
+
+
+.upload-progress{
+  max-width:620px;
+  margin:24px auto 0;
+  padding:18px 20px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  background:rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 15px 35px rgba(0,0,0,.18);
+  backdrop-filter:blur(18px);
+  text-align:left;
+}
+.upload-progress-top{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:10px;
+  color:#eef0ff;
+  font-size:13px;
+  font-weight:800;
+}
+.upload-progress-track{
+  height:12px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.10);
+}
+.upload-progress-bar{
+  width:0%;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22d3ee,#8b5cf6,#ec4899);
+  box-shadow:0 0 20px rgba(139,92,246,.55);
+  transition:width .12s linear;
+}
+
+
+/* Admin authentication */
+.admin-auth{
+  margin:28px auto 0;
+  max-width:680px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(18px);
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
+}
+.admin-auth h3{margin-bottom:8px}
+.admin-auth p{color:var(--muted);font-size:13px;margin-bottom:14px}
+.admin-auth input{
+  width:100%;padding:12px 14px;margin:6px 0;
+  border-radius:11px;border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.22);color:#fff;outline:none;
+}
+.admin-auth button{
+  margin-top:8px;padding:11px 18px;border:0;border-radius:11px;
+  background:linear-gradient(90deg,#22d3ee,#8b5cf6);
+  color:#fff;font-weight:800;cursor:pointer;
+}
+.admin-auth .logout{background:rgba(255,255,255,.12)}
+.admin-only{display:none}
+.auth-status{margin-top:10px;font-size:13px}
+
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">
+  <img src="logo.png" alt="WillyCartoons">
+</div>
+
+  <nav>
+    <a href="#upload">Upload</a>
+    <a href="#videos">Videos</a>
+    <a href="#contact">Contact</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-orb"></div><div class="eyebrow"><span class="dot"></span> THE CREATIVE HOME FOR CARTOON VIDEOS</div><h1>Turn your ideas into <span>cartoons.</span></h1>
+  <p>WillyCartoons is your creative studio for transforming photos, videos and ideas into entertaining cartoon experiences you can publish and share.</p>
+  <div class="hero-actions"><a class="btn btn-primary" href="#upload">Create a Cartoon</a><a class="btn btn-secondary" href="#videos">Explore Creations</a></div>
+  <div class="hero-showcase"><div class="showcase-inner"><div class="play">▶</div></div></div>
+</section>
+
+<div class="container">
+
+<section class="section">
+  <div class="section-top"><div><h2>From idea to cartoon</h2><p>A simple creative workflow built around your videos and imagination.</p></div></div>
+  <div class="steps">
+    <div class="step"><span class="number">01 — UPLOAD</span><h3>Bring your content</h3><p>Start with a video you want to transform, animate or share with the WillyCartoons community.</p></div>
+    <div class="step"><span class="number">02 — CREATE</span><h3>Make it memorable</h3><p>Turn ordinary footage into a distinctive cartoon experience using your creative workflow.</p></div>
+    <div class="step"><span class="number">03 — SHARE</span><h3>Publish your creation</h3><p>Put your finished work in the WillyCartoons gallery and share it with others.</p></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-top"><div><h2>Built for creators</h2><p>Everything starts with an idea. WillyCartoons gives it a place to live.</p></div></div>
+  <div class="tools">
+    <div class="tool-card"><div class="tool-icon">✦</div><h3>Cartoon Videos</h3><p>Create a home for your animated and cartoon video work.</p></div>
+    <div class="tool-card"><div class="tool-icon">◈</div><h3>Photo to Story</h3><p>Turn still images and concepts into engaging visual ideas.</p></div>
+    <div class="tool-card"><div class="tool-icon">◉</div><h3>Motion & Dance</h3><p>Explore character movement, performance and expressive motion.</p></div>
+    <div class="tool-card"><div class="tool-icon">↗</div><h3>Publish & Share</h3><p>Showcase your creations in a polished, public gallery.</p></div>
+  </div>
+</section>
+
+<section class="section studio">
+
+<div class="admin-auth" id="adminAuth">
+  <div id="loggedOutPanel">
+    <h3>WillyCartoons Admin</h3>
+    <p>Sign in to upload and manage videos.</p>
+    <input id="adminEmail" type="email" autocomplete="email" value="williammiti45@gmail.com" placeholder="Admin email">
+    <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password">
+    <button id="adminLoginBtn" type="button">Sign in</button>
+    <div id="authStatus" class="auth-status"></div>
+  </div>
+
+  <div id="loggedInPanel" style="display:none">
+    <h3>Admin signed in</h3>
+    <p id="adminSignedInAs"></p>
+    <button id="adminLogoutBtn" class="logout" type="button">Sign out</button>
+  </div>
+</div>
+
+<section class="upload-box admin-only" id="upload">
+  <div class="upload-icon">✦</div>
+  <h2>Publish your cartoon video</h2>
+
+  <p>
+    Select an MP4, MOV or WebM video to publish on WillyCartoons.
+  </p>
+
+  <label class="upload-button" for="videoFile">
+    Choose Video
+  </label>
+
+  <input
+    id="videoFile"
+    type="file"
+    accept="video/mp4,video/webm,video/quicktime"
+  >
+
+  <div id="status">
+    No video selected.
+  </div>
+
+  <div id="uploadProgress" class="upload-progress" aria-live="polite" hidden>
+    <div class="upload-progress-top">
+      <span id="uploadProgressText">0%</span>
+      <span id="uploadProgressSize">0 MB / 0 MB</span>
+    </div>
+    <div class="upload-progress-track">
+      <div id="uploadProgressBar" class="upload-progress-bar" style="width:0%;transition:width .12s linear;"></div>
+    </div>
+  </div>
+
+</section>
+
+<section id="videos" class="video-section">
+  <div class="section-top"><div><h2>Latest Creations</h2><p>Discover the newest videos published on WillyCartoons.</p></div></div>
+
+  <div id="gallery"></div>
+
+</section>
+</section>
+
+<section class="cta"><h2>Your next cartoon starts here.</h2><p>Bring a photo, a video or an idea — and make something people remember.</p><a class="btn btn-primary" href="#upload">Start Creating</a></section>
+
+</div>
+
+<section class="contact-section" id="contact">
+  <h2>Contact WillyCartoons</h2>
+  <p>Have a project, question or collaboration idea? Get in touch directly.</p>
+
+  <div class="contact-grid">
+    <div class="contact-card phone">
+      <span class="contact-label">PHONE / WHATSAPP</span>
+      <a href="tel:+97470747004">+974 70747004</a>
+    </div>
+
+    <div class="contact-card email">
+      <span class="contact-label">EMAIL</span>
+      <a href="mailto:williammiti45@gmail.com">williammiti45@gmail.com</a>
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  © 2026 WillyCartoons — AI Cartoon Studio
+</footer>
+
+<script>
+
+/*
+  SUPABASE CONNECTION
+  Replace these two values with your Supabase project details.
+*/
+
+const SUPABASE_URL = "https://rupyvqbftccnkrhlyzii.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_oRgJlR10J04T2xhFMQgsnw_bk67eqfj";
+
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+const BUCKET = "videos";
+
+
+const ADMIN_EMAIL = "williammiti45@gmail.com";
+
+const adminAuthBox = document.getElementById("adminAuth");
+const loggedOutPanel = document.getElementById("loggedOutPanel");
+const loggedInPanel = document.getElementById("loggedInPanel");
+const adminEmail = document.getElementById("adminEmail");
+const adminPassword = document.getElementById("adminPassword");
+const adminLoginBtn = document.getElementById("adminLoginBtn");
+const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+const authStatus = document.getElementById("authStatus");
+const adminSignedInAs = document.getElementById("adminSignedInAs");
+const uploadSection = document.getElementById("upload");
+
+function setAdminUI(user){
+  const isAdmin =
+    !!user &&
+    user.email &&
+    user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+  if(isAdmin){
+    loggedOutPanel.style.display = "none";
+    loggedInPanel.style.display = "block";
+    uploadSection.style.display = "block";
+    adminSignedInAs.textContent = "Signed in as " + user.email;
+    authStatus.textContent = "";
+  }else{
+    loggedOutPanel.style.display = "block";
+    loggedInPanel.style.display = "none";
+    uploadSection.style.display = "none";
+    adminSignedInAs.textContent = "";
+  }
+
+  return isAdmin;
+}
+
+async function refreshAdminUI(){
+  const { data } = await supabaseClient.auth.getSession();
+  setAdminUI(data.session ? data.session.user : null);
+}
+
+adminLoginBtn.addEventListener("click", async function(){
+  const email = adminEmail.value.trim();
+  const password = adminPassword.value;
+
+  if(email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+    authStatus.textContent = "Only the WillyCartoons administrator can sign in here.";
+    return;
+  }
+
+  if(!password){
+    authStatus.textContent = "Enter your password.";
+    return;
+  }
+
+  adminLoginBtn.disabled = true;
+  authStatus.textContent = "Signing in...";
+
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: ADMIN_EMAIL,
+      password
+    });
+
+  adminLoginBtn.disabled = false;
+
+  if(error){
+    authStatus.textContent = "Sign-in failed: " + error.message;
+    return;
+  }
+
+  setAdminUI(data.user);
+  adminPassword.value = "";
+});
+
+adminLogoutBtn.addEventListener("click", async function(){
+  await supabaseClient.auth.signOut();
+  setAdminUI(null);
+});
+
+supabaseClient.auth.onAuthStateChange(function(_event, session){
+  setAdminUI(session ? session.user : null);
+});
+
+
+
+const fileInput = document.getElementById("videoFile");
+const statusBox = document.getElementById("status");
+const gallery = document.getElementById("gallery");
+
+fileInput.addEventListener("change", async function(){
+
+  const { data:sessionData } = await supabaseClient.auth.getSession();
+  const currentUser = sessionData.session ? sessionData.session.user : null;
+
+  if(!currentUser || !currentUser.email ||
+     currentUser.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+    statusBox.textContent = "Please sign in as the WillyCartoons administrator first.";
+    this.value = "";
+    setAdminUI(null);
+    return;
+  }
+
+  const file = this.files[0];
+
+  if(!file){
+    return;
+  }
+
+  if(!file.type.startsWith("video/")){
+    statusBox.textContent = "Please select a video file.";
+    return;
+  }
+
+  statusBox.textContent =
+    "Uploading " + file.name + "...";
+
+  const safeName =
+    file.name.replace(/[^a-zA-Z0-9._-]/g,"_");
+
+  const filePath =
+    Date.now() + "_" + safeName;
+
+  const progressBox = document.getElementById("uploadProgress");
+  const progressBar = document.getElementById("uploadProgressBar");
+  const progressText = document.getElementById("uploadProgressText");
+  const progressSize = document.getElementById("uploadProgressSize");
+
+  progressBox.hidden = false;
+  progressBar.style.width = "0%";
+  progressText.textContent = "0%";
+  progressSize.textContent = "0 MB / " + formatBytes(file.size);
+
+  statusBox.textContent = "Uploading " + file.name + "...";
+
+  const uploadResult = await uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize);
+
+  if(uploadResult.error){
+    console.error(uploadResult.error);
+    statusBox.textContent =
+      "Upload failed: " + uploadResult.error.message;
+    return;
+  }
+
+  progressBar.style.width = "100%";
+  progressText.textContent = "100%";
+  progressSize.textContent =
+    formatBytes(file.size) + " / " + formatBytes(file.size);
+
+  /*
+    Use a signed URL for playback. This works for both public and
+    private Storage buckets as long as the SELECT policy exists.
+  */
+  const { data:urlData, error:urlError } =
+    await supabaseClient
+      .storage
+      .from(BUCKET)
+      .createSignedUrl(filePath, 3600);
+
+  if(urlError){
+    console.error(urlError);
+    statusBox.textContent =
+      "Upload succeeded, but playback URL could not be created: " +
+      urlError.message;
+    return;
+  }
+
+  const videoUrl = urlData.signedUrl;
+
+  statusBox.textContent =
+    "Video uploaded successfully!";
+
+  addVideo(videoUrl,file.name);
+
+  fileInput.value = "";
+
+});
+
+function formatBytes(bytes){
+  if(bytes === 0) return "0 B";
+  const units = ["B","KB","MB","GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024,i)).toFixed(i === 0 ? 0 : 2) + " " + units[i];
+}
+
+function uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize){
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+
+    const uploadUrl =
+      SUPABASE_URL +
+      "/storage/v1/object/" +
+      encodeURIComponent(BUCKET) +
+      "/" +
+      filePath.split("/").map(encodeURIComponent).join("/");
+
+    xhr.open("POST", uploadUrl, true);
+
+    xhr.setRequestHeader(
+      "Authorization",
+      "Bearer " + SUPABASE_ANON_KEY
+    );
+    xhr.setRequestHeader(
+      "apikey",
+      SUPABASE_ANON_KEY
+    );
+    xhr.setRequestHeader(
+      "Content-Type",
+      file.type || "application/octet-stream"
+    );
+    xhr.setRequestHeader("x-upsert", "false");
+
+    xhr.upload.addEventListener("progress", function(event){
+      if(!event.lengthComputable) return;
+
+      const percent = Math.round((event.loaded / event.total) * 100);
+
+      progressBar.style.width = percent + "%";
+      progressText.textContent = percent + "%";
+      progressSize.textContent =
+        formatBytes(event.loaded) + " / " + formatBytes(event.total);
+
+      statusBox.textContent =
+        "Uploading " + file.name + "... " + percent + "%";
+    });
+
+    xhr.onload = function(){
+      if(xhr.status >= 200 && xhr.status < 300){
+        resolve({data:true,error:null});
+      }else{
+        let message = "Upload failed (" + xhr.status + ")";
+        try{
+          const response = JSON.parse(xhr.responseText);
+          if(response.message) message = response.message;
+          else if(response.error) message = response.error;
+        }catch(e){}
+        resolve({data:null,error:new Error(message)});
+      }
+    };
+
+    xhr.onerror = function(){
+      resolve({
+        data:null,
+        error:new Error("Network error during upload.")
+      });
+    };
+
+    xhr.onabort = function(){
+      resolve({
+        data:null,
+        error:new Error("Upload was cancelled.")
+      });
+    };
+
+    xhr.send(file);
+  });
+}
+
+function addVideo(url,name){
+
+  const card =
+    document.createElement("div");
+
+  card.className = "video-card";
+
+  card.innerHTML = `
+    <video controls playsinline preload="metadata">
+      <source src="${url}" type="video/mp4">
+      Your browser could not load this video.
+    </video>
+
+    <div class="info">
+      <strong>${escapeHtml(name)}</strong>
+      <br><br>
+      <a href="${url}" target="_blank" rel="noopener">
+        Open video
+      </a>
+    </div>
+  `;
+
+  const player = card.querySelector("video");
+
+  player.addEventListener("error", function(){
+    statusBox.textContent =
+      "The file uploaded, but the browser cannot play this video format/codec.";
+  });
+
+  gallery.prepend(card);
+}
+
+
+async function loadVideosFromSupabase(){
+
+  try{
+    const { data:files, error } =
+      await supabaseClient
+        .storage
+        .from(BUCKET)
+        .list("", {
+          limit: 100,
+          offset: 0,
+          sortBy: { column: "created_at", order: "desc" }
+        });
+
+    if(error){
+      console.error("Gallery list error:", error);
+      statusBox.textContent =
+        "Could not load the video gallery.";
+      return;
+    }
+
+    gallery.innerHTML = "";
+
+    if(!files || files.length === 0){
+      return;
+    }
+
+    for(const file of files){
+
+      if(!file.name || file.id === null){
+        continue;
+      }
+
+      const filePath = file.name;
+
+      /*
+        The videos bucket is public, so use its permanent public URL.
+        This means another device can load the same video without
+        depending on the uploader's browser session or a temporary URL.
+      */
+      const { data:urlData } =
+        supabaseClient
+          .storage
+          .from(BUCKET)
+          .getPublicUrl(filePath);
+
+      if(!urlData || !urlData.publicUrl){
+        console.error("No public URL for:", filePath);
+        continue;
+      }
+
+      addVideo(
+        urlData.publicUrl,
+        file.name
+      );
+    }
+
+  }catch(error){
+    console.error("Gallery loading error:", error);
+    statusBox.textContent =
+      "Could not load the video gallery.";
+  }
+}
+
+function escapeHtml(text){
+
+  const div =
+    document.createElement("div");
+
+  div.textContent = text;
+
+  return div.innerHTML;
+}
+
+
+loadVideosFromSupabase();
+
+refreshAdminUI();
+</script>
+
+</body>
+</html>
