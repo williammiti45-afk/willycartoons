@@ -662,6 +662,38 @@ body:before{
   z-index:-1 !important;
 }
 
+
+#supabaseVideoList .supabase-file-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  padding:14px 16px;
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
+}
+#supabaseVideoList .supabase-file-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-weight:700;
+}
+#supabaseVideoList .supabase-file-meta{
+  opacity:.65;
+  font-size:.85rem;
+  margin-top:4px;
+}
+#supabaseVideoList .supabase-publish-btn{
+  flex:0 0 auto;
+  border:0;
+  border-radius:10px;
+  padding:9px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+
 </style>
 </head>
 
@@ -769,6 +801,15 @@ body:before{
 
 </section>
 
+
+<section class="upload-box admin-only" id="supabaseLibrary" style="display:none;margin-top:24px;">
+  <div class="upload-icon">☁</div>
+  <h2>Videos already in Supabase</h2>
+  <p>Select a video that is already stored in your <strong>videos</strong> bucket. No re-upload is required.</p>
+  <div id="supabaseVideoList" style="display:grid;gap:12px;margin-top:18px;"></div>
+  <div id="supabaseLibraryStatus" style="margin-top:14px;opacity:.8;"></div>
+</section>
+
 <section id="videos" class="video-section">
   <div class="section-top"><div><h2>Latest Creations</h2><p>Discover the newest videos published on WillyCartoons.</p></div></div>
 
@@ -834,6 +875,9 @@ const adminLogoutBtn = document.getElementById("adminLogoutBtn");
 const authStatus = document.getElementById("authStatus");
 const adminSignedInAs = document.getElementById("adminSignedInAs");
 const uploadSection = document.getElementById("upload");
+const supabaseLibrary = document.getElementById("supabaseLibrary");
+const supabaseVideoList = document.getElementById("supabaseVideoList");
+const supabaseLibraryStatus = document.getElementById("supabaseLibraryStatus");
 
 function setAdminUI(user){
   const isAdmin =
@@ -845,12 +889,16 @@ function setAdminUI(user){
     loggedOutPanel.style.display = "none";
     loggedInPanel.style.display = "block";
     uploadSection.style.display = "block";
+    supabaseLibrary.style.display = "block";
     adminSignedInAs.textContent = "Signed in as " + user.email;
     authStatus.textContent = "";
   }else{
     loggedOutPanel.style.display = "block";
     loggedInPanel.style.display = "none";
     uploadSection.style.display = "none";
+    supabaseLibrary.style.display = "none";
+    supabaseLibraryStatus.textContent = "";
+    supabaseVideoList.innerHTML = "";
     adminSignedInAs.textContent = "";
   }
 
@@ -894,6 +942,7 @@ adminLoginBtn.addEventListener("click", async function(){
 
   setAdminUI(data.user);
   adminPassword.value = "";
+  loadSupabaseVideoLibrary();
 });
 
 adminLogoutBtn.addEventListener("click", async function(){
@@ -1006,7 +1055,7 @@ function formatBytes(bytes){
   return (bytes / Math.pow(1024,i)).toFixed(i === 0 ? 0 : 2) + " " + units[i];
 }
 
-async function uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize){
+function uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize){
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
 
@@ -1019,19 +1068,76 @@ async function uploadVideoWithProgress(file, filePath, progressBar, progressText
 
     xhr.open("POST", uploadUrl, true);
 
-    const { data:sessionData } =
-      await supabaseClient.auth.getSession();
+    supabaseClient.auth.getSession().then(({data:sessionData}) => {
+      const accessToken =
+        sessionData.session && sessionData.session.access_token;
 
-    const accessToken =
-      sessionData.session && sessionData.session.access_token;
+      if(!accessToken){
+        resolve({
+          data:null,
+          error:new Error("Your admin session has expired. Please sign in again.")
+        });
+        return;
+      }
 
-    if(!accessToken){
-      resolve({
-        data:null,
-        error:new Error("Your admin session has expired. Please sign in again.")
+      xhr.setRequestHeader(
+        "Authorization",
+        "Bearer " + accessToken
+      );
+      xhr.setRequestHeader(
+        "apikey",
+        SUPABASE_ANON_KEY
+      );
+      xhr.setRequestHeader(
+        "Content-Type",
+        file.type || "application/octet-stream"
+      );
+      xhr.setRequestHeader("x-upsert", "false");
+
+      xhr.upload.addEventListener("progress", function(event){
+        if(!event.lengthComputable) return;
+
+        const percent = Math.round((event.loaded / event.total) * 100);
+
+        progressBar.style.width = percent + "%";
+        progressText.textContent = percent + "%";
+        progressSize.textContent =
+          formatBytes(event.loaded) + " / " + formatBytes(event.total);
+
+        statusBox.textContent =
+          "Uploading " + file.name + "... " + percent + "%";
       });
-      return;
-    }
+
+      xhr.onload = function(){
+        if(xhr.status >= 200 && xhr.status < 300){
+          resolve({data:true,error:null});
+        }else{
+          let message = "Upload failed (" + xhr.status + ")";
+          try{
+            const response = JSON.parse(xhr.responseText);
+            if(response.message) message = response.message;
+            else if(response.error) message = response.error;
+          }catch(e){}
+          resolve({data:null,error:new Error(message)});
+        }
+      };
+
+      xhr.onerror = function(){
+        resolve({
+          data:null,
+          error:new Error("Network error during upload.")
+        });
+      };
+
+      xhr.onabort = function(){
+        resolve({
+          data:null,
+          error:new Error("Upload was cancelled.")
+        });
+      };
+
+      xhr.send(file);
+    });
 
     xhr.setRequestHeader(
       "Authorization",
@@ -1091,6 +1197,121 @@ async function uploadVideoWithProgress(file, filePath, progressBar, progressText
 
     xhr.send(file);
   });
+}
+
+
+async function loadSupabaseVideoLibrary(){
+  if(!supabaseVideoList) return;
+
+  const { data:sessionData } =
+    await supabaseClient.auth.getSession();
+
+  const user =
+    sessionData.session ? sessionData.session.user : null;
+
+  if(!user || !user.email ||
+     user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+    return;
+  }
+
+  supabaseLibraryStatus.textContent = "Loading videos from Supabase...";
+  supabaseVideoList.innerHTML = "";
+
+  const { data:files, error } =
+    await supabaseClient
+      .storage
+      .from(BUCKET)
+      .list("", {
+        limit:100,
+        offset:0,
+        sortBy:{column:"created_at",order:"desc"}
+      });
+
+  if(error){
+    console.error(error);
+    supabaseLibraryStatus.textContent =
+      "Could not load Supabase videos: " + error.message;
+    return;
+  }
+
+  const videos = (files || []).filter(
+    file => file.name && file.id !== null &&
+            /\.(mp4|webm|mov|m4v)$/i.test(file.name)
+  );
+
+  if(!videos.length){
+    supabaseLibraryStatus.textContent =
+      "No videos found in the Supabase videos bucket.";
+    return;
+  }
+
+  supabaseLibraryStatus.textContent =
+    videos.length + " video" + (videos.length === 1 ? "" : "s") + " stored in Supabase.";
+
+  for(const file of videos){
+    const row = document.createElement("div");
+    row.className = "supabase-file-row";
+
+    const left = document.createElement("div");
+    left.style.minWidth = "0";
+
+    const name = document.createElement("div");
+    name.className = "supabase-file-name";
+    name.textContent = file.name;
+
+    const meta = document.createElement("div");
+    meta.className = "supabase-file-meta";
+    meta.textContent =
+      file.metadata && file.metadata.size
+        ? formatBytes(Number(file.metadata.size))
+        : "Stored in Supabase";
+
+    left.appendChild(name);
+    left.appendChild(meta);
+
+    const publish = document.createElement("button");
+    publish.className = "supabase-publish-btn";
+    publish.type = "button";
+    publish.textContent = "Publish to gallery";
+
+    publish.addEventListener("click", async function(){
+      publish.disabled = true;
+      publish.textContent = "Publishing...";
+
+      const { data:urlData, error:urlError } =
+        supabaseClient
+          .storage
+          .from(BUCKET)
+          .getPublicUrl(file.name);
+
+      if(urlError || !urlData || !urlData.publicUrl){
+        publish.disabled = false;
+        publish.textContent = "Publish to gallery";
+        supabaseLibraryStatus.textContent =
+          "Could not create the video URL.";
+        return;
+      }
+
+      const cacheKey =
+        file.updated_at || file.created_at || Date.now();
+
+      const playbackUrl =
+        urlData.publicUrl + "?v=" +
+        encodeURIComponent(cacheKey);
+
+      addVideo(playbackUrl, file.name, file.name);
+
+      publish.textContent = "Published ✓";
+      publish.disabled = true;
+
+      statusBox.textContent =
+        file.name + " is now published in the gallery.";
+    });
+
+    row.appendChild(left);
+    row.appendChild(publish);
+    supabaseVideoList.appendChild(row);
+  }
 }
 
 function addVideo(url,name,filePath){
@@ -1308,10 +1529,11 @@ function escapeHtml(text){
 
 
 loadVideosFromSupabase();
-refreshAdminUI();
+refreshAdminUI().then(() => loadSupabaseVideoLibrary());
 
 // Keep the public gallery synchronized with Supabase.
 setInterval(loadVideosFromSupabase, 15000);
+setInterval(loadSupabaseVideoLibrary, 30000);
 </script>
 
 </body>
