@@ -583,10 +583,51 @@ footer{
 .admin-only{display:none}
 .auth-status{margin-top:10px;font-size:13px}
 
+
+/* Full-screen AI video background */
+.ai-video-background{
+  position:fixed !important;
+  inset:0;
+  z-index:0 !important;
+  overflow:hidden;
+  pointer-events:none;
+  background:#050711;
+}
+.ai-video-background video{
+  width:100%;
+  height:100%;
+  display:block;
+  object-fit:cover;
+  object-position:center center;
+}
+.ai-video-overlay{
+  position:fixed !important;
+  inset:0;
+  z-index:0 !important;
+  pointer-events:none;
+  background:
+    linear-gradient(rgba(5,7,17,.62),rgba(5,7,17,.72)),
+    radial-gradient(circle at 50% 35%,rgba(5,7,17,.05),rgba(5,7,17,.55));
+}
+/* Keep the existing website content above the video */
+body > *:not(.ai-video-background):not(.ai-video-overlay){
+  position:relative;
+  z-index:1;
+}
+
 </style>
 </head>
 
 <body>
+
+<!-- WillyCartoons AI video background -->
+<div class="ai-video-background" aria-hidden="true">
+  <video id="aiBackgroundVideo" autoplay muted loop playsinline preload="auto">
+    <source src="me_myself_16x9.mp4" type="video/mp4">
+  </video>
+</div>
+<div class="ai-video-overlay" aria-hidden="true"></div>
+
 
 <header>
   <div class="logo">
