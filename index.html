@@ -1837,19 +1837,139 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
   #willyLogoTileLayer{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:145px;gap:12px;padding:12px}
   .willy-logo-tile::before{width:60%;height:60%;opacity:.16}
 }
-</style><style id="wc-mobile-final">
-@media(max-width:650px){
-#wcMobileQuickNav{position:fixed!important;left:10px!important;right:10px!important;bottom:10px!important;z-index:2147483000!important;display:grid!important;grid-template-columns:1fr 1fr!important;gap:8px!important;padding:8px!important;border:1px solid rgba(255,255,255,.18)!important;border-radius:18px!important;background:rgba(5,7,17,.95)!important;backdrop-filter:blur(20px)!important;box-shadow:0 15px 45px rgba(0,0,0,.45)!important}
-#wcMobileQuickNav a{display:flex!important;align-items:center!important;justify-content:center!important;min-height:42px!important;color:#fff!important;background:rgba(255,255,255,.08)!important;border-radius:12px!important;text-decoration:none!important;font-size:13px!important;font-weight:800!important}
-body{padding-bottom:76px!important}
-.video-card{position:relative!important;scroll-margin-top:90px!important}
-.wc-mobile-player-nav{position:absolute!important;left:8px!important;right:8px!important;top:8px!important;z-index:1000!important;display:flex!important;align-items:center!important;justify-content:space-between!important;pointer-events:none!important}
-.wc-mobile-player-nav button{pointer-events:auto!important;width:46px!important;height:46px!important;min-width:46px!important;padding:0!important;border-radius:50%!important;border:1px solid rgba(255,255,255,.3)!important;background:rgba(0,0,0,.78)!important;color:#fff!important;font-size:28px!important;display:flex!important;align-items:center!important;justify-content:center!important;cursor:pointer!important}
-.wc-mobile-player-nav button:disabled{opacity:.3!important}
-.wc-mobile-player-count{padding:6px 11px!important;border-radius:999px!important;background:rgba(0,0,0,.72)!important;color:#fff!important;font-size:11px!important;font-weight:800!important}
+</style>
+<style id="wc-mobile-navigation-final">
+@media(max-width:700px){
+  header{
+    position:sticky!important;
+    top:0!important;
+    min-height:66px!important;
+    display:flex!important;
+    align-items:center!important;
+    gap:7px!important;
+    padding:8px 10px!important;
+  }
+  header .logo{flex:1 1 auto!important;min-width:0!important}
+  header .logo img{max-width:170px!important;max-height:44px!important}
+
+  /* Mobile quick navigation: exactly Videos + Contact. */
+  header nav{
+    display:flex!important;
+    position:static!important;
+    flex:0 0 auto!important;
+    align-items:center!important;
+    gap:4px!important;
+    padding:0!important;
+    border:0!important;
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  header nav a{
+    display:none!important;
+    padding:8px 9px!important;
+    border-radius:10px!important;
+    font-size:11px!important;
+    font-weight:800!important;
+    white-space:nowrap!important;
+  }
+  header nav a[href="#videos"],
+  header nav a[href="#contact"]{
+    display:inline-flex!important;
+  }
+
+  /* Clean hamburger; it opens the full navigation. */
+  .wc-mobile-menu{
+    display:flex!important;
+    flex:0 0 40px!important;
+    width:40px!important;
+    height:40px!important;
+    padding:0!important;
+    border:1px solid rgba(255,255,255,.20)!important;
+    border-radius:11px!important;
+    background:rgba(255,255,255,.08)!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex-direction:column!important;
+    gap:5px!important;
+  }
+  .wc-mobile-menu span{
+    display:block!important;
+    width:18px!important;
+    height:2px!important;
+    border-radius:2px!important;
+    background:#fff!important;
+  }
+
+  header.wc-mobile-open nav{
+    display:flex!important;
+    position:absolute!important;
+    top:68px!important;
+    left:10px!important;
+    right:10px!important;
+    padding:7px!important;
+    flex-direction:column!important;
+    align-items:stretch!important;
+    gap:3px!important;
+    border:1px solid rgba(255,255,255,.15)!important;
+    border-radius:16px!important;
+    background:rgba(5,7,17,.98)!important;
+    box-shadow:0 20px 55px rgba(0,0,0,.5)!important;
+    backdrop-filter:blur(18px)!important;
+  }
+  header.wc-mobile-open nav a{
+    display:flex!important;
+    padding:12px 14px!important;
+    font-size:13px!important;
+  }
+
+  /* Player controls. They exist only on videos that have a neighbour. */
+  .wc-mobile-player-nav{
+    position:absolute!important;
+    left:9px!important;
+    right:9px!important;
+    top:9px!important;
+    z-index:50!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+    pointer-events:none!important;
+  }
+  .wc-mobile-player-nav button{
+    pointer-events:auto!important;
+    width:44px!important;
+    height:44px!important;
+    min-width:44px!important;
+    padding:0!important;
+    margin:0!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    border:1px solid rgba(255,255,255,.30)!important;
+    border-radius:50%!important;
+    background:rgba(0,0,0,.78)!important;
+    color:#fff!important;
+    font-size:27px!important;
+    line-height:1!important;
+  }
+  .wc-mobile-player-count{
+    padding:5px 10px!important;
+    border-radius:999px!important;
+    background:rgba(0,0,0,.72)!important;
+    border:1px solid rgba(255,255,255,.18)!important;
+    color:#fff!important;
+    font-size:11px!important;
+    font-weight:800!important;
+  }
+  .video-card{
+    position:relative!important;
+    scroll-margin-top:82px!important;
+  }
 }
-@media(min-width:651px){#wcMobileQuickNav,.wc-mobile-player-nav{display:none!important}}
-</style></head>
+@media(min-width:701px){
+  .wc-mobile-player-nav{display:none!important}
+}
+</style>
+</head>
 <body><div id="willyLogoTileLayer" aria-hidden="true"><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div><div class="willy-logo-tile"></div></div>
 <header>
 <div class="logo">
@@ -2480,33 +2600,71 @@ function addVideo(url,name,filePath){
 
   const player = card.querySelector("video");
   const topButton = card.querySelector(".tile-top-button");
-  const prev = card.querySelector(".wc-mobile-prev");
-  const next = card.querySelector(".wc-mobile-next");
-  const count = card.querySelector(".wc-mobile-player-count");
+  const mobilePrev = card.querySelector(".wc-mobile-prev");
+  const mobileNext = card.querySelector(".wc-mobile-next");
+  const mobileCount = card.querySelector(".wc-mobile-player-count");
 
-  function cards(){
-    return Array.from(gallery.querySelectorAll(".video-card"));
+  function refreshMobileVideoControls(){
+    if(window.innerWidth > 700) return;
+    const cards = Array.from(gallery.querySelectorAll(".video-card"));
+    cards.forEach((c,index)=>{
+      const nav = c.querySelector(".wc-mobile-player-nav");
+      const prev = c.querySelector(".wc-mobile-prev");
+      const next = c.querySelector(".wc-mobile-next");
+      const count = c.querySelector(".wc-mobile-player-count");
+      if(!nav) return;
+      if(count) count.textContent = (index+1) + " / " + cards.length;
+      // FIRST video: no Previous button.
+      if(prev) prev.style.display = index === 0 ? "none" : "flex";
+      // LAST video: no Next button.
+      if(next) next.style.display = index === cards.length-1 ? "none" : "flex";
+      // If only one video exists, remove the whole control bar.
+      nav.style.display = cards.length <= 1 ? "none" : "flex";
+    });
   }
-  function refreshNav(){
-    const a=cards(),i=a.indexOf(card);
-    if(count) count.textContent=(i+1)+" / "+a.length;
-    if(prev) prev.disabled=i<=0;
-    if(next) next.disabled=i<0||i>=a.length-1;
-  }
-  function go(delta){
-    if(innerWidth>650)return;
-    const a=cards(),i=a.indexOf(card),j=i+delta;
-    if(j<0||j>=a.length)return;
-    a.forEach(c=>{const v=c.querySelector("video");if(v)v.pause()});
-    const target=a[j];
+
+  function navigateMobileVideo(delta){
+    if(window.innerWidth > 700) return;
+    const cards = Array.from(gallery.querySelectorAll(".video-card"));
+    const index = cards.indexOf(card);
+    const targetIndex = index + delta;
+    if(targetIndex < 0 || targetIndex >= cards.length) return;
+
+    cards.forEach(c=>{
+      const v=c.querySelector("video");
+      if(v) v.pause();
+    });
+
+    const target=cards[targetIndex];
     target.scrollIntoView({behavior:"smooth",block:"center"});
-    const v=target.querySelector("video");
-    if(v)setTimeout(()=>v.play().catch(()=>{}),500);
+    const targetVideo=target.querySelector("video");
+    if(targetVideo){
+      setTimeout(()=>targetVideo.play().catch(()=>{}),350);
+    }
   }
-  prev.onclick=e=>{e.preventDefault();e.stopPropagation();go(-1)};
-  next.onclick=e=>{e.preventDefault();e.stopPropagation();go(1)};
-  player.addEventListener("play",()=>{
-    if(innerWidth<=650)cards().forEach(c=>{const v=c.querySelector("video");if(v&&v!==player)v.pause()});
+
+  if(mobilePrev){
+    mobilePrev.addEventListener("click",function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      navigateMobileVideo(-1);
+    });
+  }
+  if(mobileNext){
+    mobileNext.addEventListener("click",function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      navigateMobileVideo(1);
+    });
+  }
+
+  player.addEventListener("play",function(){
+    if(window.innerWidth <= 700){
+      Array.from(gallery.querySelectorAll(".video-card")).forEach(c=>{
+        const v=c.querySelector("video");
+        if(v && v !== player) v.pause();
+      });
+    }
   });
 
   topButton.addEventListener("click", function(){
@@ -2531,7 +2689,7 @@ function addVideo(url,name,filePath){
   });
 
   gallery.appendChild(card);
-  refreshNav();
+  refreshMobileVideoControls();
 
   // Apply the current language to controls on this newly-created tile.
   const currentLang = localStorage.getItem("willycartoons-language") || "en";
@@ -2770,34 +2928,81 @@ function init(){
 }
 document.readyState==="loading"?document.addEventListener("DOMContentLoaded",init):init();
 })();
-</script><div id="wcMobileQuickNav"><a href="#videos">Videos</a><a href="#contact">Contact</a></div><script id="wc-mobile-smooth">
+</script>
+<script id="wc-mobile-video-scroll-final">
 (function(){
-let last=scrollY||0,lock=false,stamp=0;
-function run(){
- if(innerWidth>650||lock)return;
- const g=document.getElementById("gallery");if(!g)return;
- const a=[...g.querySelectorAll(".video-card")];
- const cur=a.find(c=>{const v=c.querySelector("video");return v&&!v.paused&&!v.ended});
- if(!cur)return;
- const y=scrollY||0,d=y>last?1:y<last?-1:0;last=y;if(!d||Date.now()-stamp<1100)return;
- const r=cur.getBoundingClientRect(),t=innerHeight*.25,i=a.indexOf(cur);
- let target=null;
- if(d>0&&r.bottom<=t&&i<a.length-1)target=a[i+1];
- if(d<0&&r.top>=innerHeight-t&&i>0)target=a[i-1];
- if(!target)return;
- stamp=Date.now();lock=true;
- a.forEach(c=>{const v=c.querySelector("video");if(v)v.pause()});
- target.scrollIntoView({behavior:"smooth",block:"center"});
- const v=target.querySelector("video");
- setTimeout(()=>{lock=false;if(v)v.play().catch(()=>{});last=scrollY||0},700);
-}
-window.addEventListener("scroll",run,{passive:true});
-document.addEventListener("play",e=>{
- if(innerWidth<=650&&e.target&&e.target.tagName==="VIDEO"){
-  const a=[...document.querySelectorAll(".video-card")],c=e.target.closest(".video-card");
-  a.forEach(x=>{const v=x.querySelector("video");if(v&&x!==c)v.pause()});
- }
-},true);
+  let lastY=window.scrollY||0;
+  let locked=false;
+  let lastSwitch=0;
+
+  function mobile(){return window.innerWidth<=700}
+  function cards(){
+    const g=document.getElementById("gallery");
+    return g ? Array.from(g.querySelectorAll(".video-card")) : [];
+  }
+  function playing(){
+    return cards().find(c=>{
+      const v=c.querySelector("video");
+      return v && !v.paused && !v.ended;
+    });
+  }
+  function pauseOthers(keep){
+    cards().forEach(c=>{
+      const v=c.querySelector("video");
+      if(v && c!==keep) v.pause();
+    });
+  }
+
+  document.addEventListener("play",function(e){
+    if(!mobile() || !e.target || e.target.tagName!=="VIDEO") return;
+    const c=e.target.closest(".video-card");
+    if(c) pauseOthers(c);
+  },true);
+
+  window.addEventListener("scroll",function(){
+    if(!mobile() || locked) return;
+
+    const y=window.scrollY||0;
+    const direction=y>lastY ? 1 : y<lastY ? -1 : 0;
+    lastY=y;
+    if(!direction) return;
+
+    const current=playing();
+    if(!current) return;
+
+    const now=Date.now();
+    if(now-lastSwitch<900) return;
+
+    const r=current.getBoundingClientRect();
+    const threshold=window.innerHeight*0.25;
+    const list=cards();
+    const index=list.indexOf(current);
+    let target=null;
+
+    // Down: current card has moved 25% above the viewport.
+    if(direction>0 && r.top <= -threshold && index < list.length-1){
+      target=list[index+1];
+    }
+    // Up: current card has moved 25% below the viewport.
+    if(direction<0 && r.bottom >= window.innerHeight+threshold && index > 0){
+      target=list[index-1];
+    }
+
+    if(!target) return;
+
+    lastSwitch=now;
+    locked=true;
+    pauseOthers(target);
+    target.scrollIntoView({behavior:"smooth",block:"center"});
+
+    const v=target.querySelector("video");
+    setTimeout(()=>{
+      locked=false;
+      if(v) v.play().catch(()=>{});
+      lastY=window.scrollY||0;
+    },600);
+  },{passive:true});
 })();
-</script></body>
+</script>
+</body>
 </html>
