@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -367,7 +368,15 @@ nav a:hover{
   backdrop-filter:blur(20px);
 }
 .video-card:hover{transform:translateY(-6px);border-color:rgba(192,132,252,.55);box-shadow:0 30px 75px rgba(0,0,0,.35)}
-.video-card video{width:100%;aspect-ratio:16/9;display:block;background:#000;object-fit:cover}
+.video-card video{
+  width:100%;
+  height:auto;
+  aspect-ratio:auto;
+  display:block;
+  background:#000;
+  object-fit:contain;
+  max-height:80vh;
+}
 .video-card .info{padding:18px}
 .video-card a{color:#d8b4fe;text-decoration:none;font-weight:750}
 .video-card a:hover{color:#fff}
@@ -896,7 +905,7 @@ fileInput.addEventListener("change", async function(){
   statusBox.textContent =
     "Video uploaded successfully!";
 
-  addVideo(videoUrl,file.name);
+  addVideo(videoUrl,file.name,filePath);
 
   fileInput.value = "";
 
@@ -909,7 +918,7 @@ function formatBytes(bytes){
   return (bytes / Math.pow(1024,i)).toFixed(i === 0 ? 0 : 2) + " " + units[i];
 }
 
-function uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize){
+async function uploadVideoWithProgress(file, filePath, progressBar, progressText, progressSize){
   return new Promise((resolve) => {
     const xhr = new XMLHttpRequest();
 
@@ -922,9 +931,23 @@ function uploadVideoWithProgress(file, filePath, progressBar, progressText, prog
 
     xhr.open("POST", uploadUrl, true);
 
+    const { data:sessionData } =
+      await supabaseClient.auth.getSession();
+
+    const accessToken =
+      sessionData.session && sessionData.session.access_token;
+
+    if(!accessToken){
+      resolve({
+        data:null,
+        error:new Error("Your admin session has expired. Please sign in again.")
+      });
+      return;
+    }
+
     xhr.setRequestHeader(
       "Authorization",
-      "Bearer " + SUPABASE_ANON_KEY
+      "Bearer " + accessToken
     );
     xhr.setRequestHeader(
       "apikey",
@@ -982,12 +1005,17 @@ function uploadVideoWithProgress(file, filePath, progressBar, progressText, prog
   });
 }
 
-function addVideo(url,name){
+function addVideo(url,name,filePath){
 
-  const card =
-    document.createElement("div");
+  // Prevent duplicate cards during synchronization.
+  const existing = gallery.querySelector(
+    `.video-card[data-file-path="${CSS.escape(filePath || "")}"]`
+  );
+  if(existing) existing.remove();
 
+  const card = document.createElement("div");
   card.className = "video-card";
+  card.dataset.filePath = filePath || "";
 
   card.innerHTML = `
     <video controls playsinline preload="metadata">
@@ -998,22 +1026,106 @@ function addVideo(url,name){
     <div class="info">
       <strong>${escapeHtml(name)}</strong>
       <br><br>
-      <a href="${url}" target="_blank" rel="noopener">
-        Open video
-      </a>
+      <a href="${url}" target="_blank" rel="noopener">Open video</a>
+      <button class="admin-delete-video" type="button" style="
+        display:none;
+        margin-top:14px;
+        width:100%;
+        padding:10px 14px;
+        border:0;
+        border-radius:10px;
+        background:linear-gradient(90deg,#ef4444,#dc2626);
+        color:#fff;
+        font-weight:800;
+        cursor:pointer;
+      ">Delete video</button>
     </div>
   `;
 
   const player = card.querySelector("video");
+  const deleteBtn = card.querySelector(".admin-delete-video");
+
+  player.addEventListener("loadedmetadata", function(){
+    if(this.videoWidth && this.videoHeight){
+      this.style.aspectRatio =
+        `${this.videoWidth} / ${this.videoHeight}`;
+    }
+  });
 
   player.addEventListener("error", function(){
-    statusBox.textContent =
-      "The file uploaded, but the browser cannot play this video format/codec.";
+    card.remove();
+    showEmptyGalleryIfNeeded();
+  });
+
+  deleteBtn.addEventListener("click", async function(){
+    const { data:sessionData } =
+      await supabaseClient.auth.getSession();
+
+    const user =
+      sessionData.session ? sessionData.session.user : null;
+
+    if(!user || !user.email ||
+       user.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+      statusBox.textContent = "Administrator sign-in required.";
+      return;
+    }
+
+    if(!filePath) return;
+
+    deleteBtn.disabled = true;
+    deleteBtn.textContent = "Deleting...";
+
+    const { error } =
+      await supabaseClient
+        .storage
+        .from(BUCKET)
+        .remove([filePath]);
+
+    if(error){
+      console.error(error);
+      deleteBtn.disabled = false;
+      deleteBtn.textContent = "Delete video";
+      statusBox.textContent =
+        "Delete failed: " + error.message;
+      return;
+    }
+
+    // Remove the card immediately; then confirm from Supabase.
+    card.remove();
+    showEmptyGalleryIfNeeded();
+    statusBox.textContent = "Video deleted successfully.";
+
+    await loadVideosFromSupabase();
   });
 
   gallery.prepend(card);
+
+  supabaseClient.auth.getSession().then(({data}) => {
+    const user =
+      data.session ? data.session.user : null;
+
+    if(user && user.email &&
+       user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase()){
+      deleteBtn.style.display = "block";
+    }
+  });
 }
 
+function showEmptyGalleryIfNeeded(){
+  if(gallery.querySelector(".video-card")) return;
+
+  gallery.innerHTML = `
+    <div class="gallery-empty" style="
+      grid-column:1/-1;
+      text-align:center;
+      padding:45px 20px;
+      color:var(--muted);
+      border:1px dashed rgba(255,255,255,.18);
+      border-radius:18px;
+      background:rgba(255,255,255,.04);
+    ">No videos available.</div>
+  `;
+}
 
 async function loadVideosFromSupabase(){
 
@@ -1023,58 +1135,76 @@ async function loadVideosFromSupabase(){
         .storage
         .from(BUCKET)
         .list("", {
-          limit: 100,
-          offset: 0,
-          sortBy: { column: "created_at", order: "desc" }
+          limit:100,
+          offset:0,
+          sortBy:{column:"created_at",order:"desc"}
         });
 
     if(error){
       console.error("Gallery list error:", error);
-      statusBox.textContent =
-        "Could not load the video gallery.";
       return;
     }
 
-    gallery.innerHTML = "";
+    const validFiles = (files || []).filter(
+      file => file.name && file.id !== null
+    );
 
-    if(!files || files.length === 0){
-      return;
-    }
+    const existingCards =
+      Array.from(gallery.querySelectorAll(".video-card"));
 
-    for(const file of files){
+    const validPaths =
+      new Set(validFiles.map(file => file.name));
 
-      if(!file.name || file.id === null){
-        continue;
+    // Remove cards whose Supabase objects no longer exist.
+    existingCards.forEach(card => {
+      if(!validPaths.has(card.dataset.filePath)){
+        card.remove();
       }
+    });
 
-      const filePath = file.name;
+    if(validFiles.length === 0){
+      showEmptyGalleryIfNeeded();
+      return;
+    }
 
-      /*
-        The videos bucket is public, so use its permanent public URL.
-        This means another device can load the same video without
-        depending on the uploader's browser session or a temporary URL.
-      */
+    const currentPaths =
+      new Set(
+        Array.from(gallery.querySelectorAll(".video-card"))
+          .map(card => card.dataset.filePath)
+      );
+
+    // Add only videos not already displayed.
+    for(const file of validFiles){
+
+      if(currentPaths.has(file.name)) continue;
+
       const { data:urlData } =
         supabaseClient
           .storage
           .from(BUCKET)
-          .getPublicUrl(filePath);
+          .getPublicUrl(file.name);
 
-      if(!urlData || !urlData.publicUrl){
-        console.error("No public URL for:", filePath);
-        continue;
-      }
+      if(!urlData || !urlData.publicUrl) continue;
+
+      // Cache-bust the media URL when the stored object changes.
+      const cacheKey =
+        file.updated_at || file.created_at || Date.now();
+
+      const playbackUrl =
+        urlData.publicUrl + "?v=" +
+        encodeURIComponent(cacheKey);
 
       addVideo(
-        urlData.publicUrl,
+        playbackUrl,
+        file.name,
         file.name
       );
     }
 
+    showEmptyGalleryIfNeeded();
+
   }catch(error){
-    console.error("Gallery loading error:", error);
-    statusBox.textContent =
-      "Could not load the video gallery.";
+    console.error("Gallery synchronization error:", error);
   }
 }
 
@@ -1090,8 +1220,10 @@ function escapeHtml(text){
 
 
 loadVideosFromSupabase();
-
 refreshAdminUI();
+
+// Keep the public gallery synchronized with Supabase.
+setInterval(loadVideosFromSupabase, 15000);
 </script>
 
 </body>
