@@ -547,6 +547,34 @@ footer{
   transition:width .12s linear;
 }
 
+
+/* Admin authentication */
+.admin-auth{
+  margin:28px auto 0;
+  max-width:680px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(18px);
+  box-shadow:0 18px 50px rgba(0,0,0,.25);
+}
+.admin-auth h3{margin-bottom:8px}
+.admin-auth p{color:var(--muted);font-size:13px;margin-bottom:14px}
+.admin-auth input{
+  width:100%;padding:12px 14px;margin:6px 0;
+  border-radius:11px;border:1px solid rgba(255,255,255,.18);
+  background:rgba(0,0,0,.22);color:#fff;outline:none;
+}
+.admin-auth button{
+  margin-top:8px;padding:11px 18px;border:0;border-radius:11px;
+  background:linear-gradient(90deg,#22d3ee,#8b5cf6);
+  color:#fff;font-weight:800;cursor:pointer;
+}
+.admin-auth .logout{background:rgba(255,255,255,.12)}
+.admin-only{display:none}
+.auth-status{margin-top:10px;font-size:13px}
+
 </style>
 </head>
 
@@ -593,7 +621,25 @@ footer{
 </section>
 
 <section class="section studio">
-<section class="upload-box" id="upload">
+
+<div class="admin-auth" id="adminAuth">
+  <div id="loggedOutPanel">
+    <h3>WillyCartoons Admin</h3>
+    <p>Sign in to upload and manage videos.</p>
+    <input id="adminEmail" type="email" autocomplete="email" value="williammiti45@gmail.com" placeholder="Admin email">
+    <input id="adminPassword" type="password" autocomplete="current-password" placeholder="Password">
+    <button id="adminLoginBtn" type="button">Sign in</button>
+    <div id="authStatus" class="auth-status"></div>
+  </div>
+
+  <div id="loggedInPanel" style="display:none">
+    <h3>Admin signed in</h3>
+    <p id="adminSignedInAs"></p>
+    <button id="adminLogoutBtn" class="logout" type="button">Sign out</button>
+  </div>
+</div>
+
+<section class="upload-box admin-only" id="upload">
   <div class="upload-icon">✦</div>
   <h2>Publish your cartoon video</h2>
 
@@ -679,11 +725,108 @@ const supabaseClient =
 
 const BUCKET = "videos";
 
+
+const ADMIN_EMAIL = "williammiti45@gmail.com";
+
+const adminAuthBox = document.getElementById("adminAuth");
+const loggedOutPanel = document.getElementById("loggedOutPanel");
+const loggedInPanel = document.getElementById("loggedInPanel");
+const adminEmail = document.getElementById("adminEmail");
+const adminPassword = document.getElementById("adminPassword");
+const adminLoginBtn = document.getElementById("adminLoginBtn");
+const adminLogoutBtn = document.getElementById("adminLogoutBtn");
+const authStatus = document.getElementById("authStatus");
+const adminSignedInAs = document.getElementById("adminSignedInAs");
+const uploadSection = document.getElementById("upload");
+
+function setAdminUI(user){
+  const isAdmin =
+    !!user &&
+    user.email &&
+    user.email.toLowerCase() === ADMIN_EMAIL.toLowerCase();
+
+  if(isAdmin){
+    loggedOutPanel.style.display = "none";
+    loggedInPanel.style.display = "block";
+    uploadSection.style.display = "block";
+    adminSignedInAs.textContent = "Signed in as " + user.email;
+    authStatus.textContent = "";
+  }else{
+    loggedOutPanel.style.display = "block";
+    loggedInPanel.style.display = "none";
+    uploadSection.style.display = "none";
+    adminSignedInAs.textContent = "";
+  }
+
+  return isAdmin;
+}
+
+async function refreshAdminUI(){
+  const { data } = await supabaseClient.auth.getSession();
+  setAdminUI(data.session ? data.session.user : null);
+}
+
+adminLoginBtn.addEventListener("click", async function(){
+  const email = adminEmail.value.trim();
+  const password = adminPassword.value;
+
+  if(email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+    authStatus.textContent = "Only the WillyCartoons administrator can sign in here.";
+    return;
+  }
+
+  if(!password){
+    authStatus.textContent = "Enter your password.";
+    return;
+  }
+
+  adminLoginBtn.disabled = true;
+  authStatus.textContent = "Signing in...";
+
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: ADMIN_EMAIL,
+      password
+    });
+
+  adminLoginBtn.disabled = false;
+
+  if(error){
+    authStatus.textContent = "Sign-in failed: " + error.message;
+    return;
+  }
+
+  setAdminUI(data.user);
+  adminPassword.value = "";
+});
+
+adminLogoutBtn.addEventListener("click", async function(){
+  await supabaseClient.auth.signOut();
+  setAdminUI(null);
+});
+
+supabaseClient.auth.onAuthStateChange(function(_event, session){
+  setAdminUI(session ? session.user : null);
+});
+
+
+
 const fileInput = document.getElementById("videoFile");
 const statusBox = document.getElementById("status");
 const gallery = document.getElementById("gallery");
 
 fileInput.addEventListener("change", async function(){
+
+  const { data:sessionData } = await supabaseClient.auth.getSession();
+  const currentUser = sessionData.session ? sessionData.session.user : null;
+
+  if(!currentUser || !currentUser.email ||
+     currentUser.email.toLowerCase() !== ADMIN_EMAIL.toLowerCase()){
+    statusBox.textContent = "Please sign in as the WillyCartoons administrator first.";
+    this.value = "";
+    setAdminUI(null);
+    return;
+  }
 
   const file = this.files[0];
 
@@ -948,6 +1091,8 @@ function escapeHtml(text){
 
 
 loadVideosFromSupabase();
+
+refreshAdminUI();
 </script>
 
 </body>
