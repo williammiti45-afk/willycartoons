@@ -509,6 +509,44 @@ footer{
   .contact-card{min-width:100%}
 }
 
+
+
+.upload-progress{
+  max-width:620px;
+  margin:24px auto 0;
+  padding:18px 20px;
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;
+  background:rgba(255,255,255,.07);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 15px 35px rgba(0,0,0,.18);
+  backdrop-filter:blur(18px);
+  text-align:left;
+}
+.upload-progress-top{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  margin-bottom:10px;
+  color:#eef0ff;
+  font-size:13px;
+  font-weight:800;
+}
+.upload-progress-track{
+  height:12px;
+  border-radius:999px;
+  overflow:hidden;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.10);
+}
+.upload-progress-bar{
+  width:0%;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,#22d3ee,#8b5cf6,#ec4899);
+  box-shadow:0 0 20px rgba(139,92,246,.55);
+  transition:width .12s linear;
+}
+
 </style>
 </head>
 
@@ -575,6 +613,16 @@ footer{
 
   <div id="status">
     No video selected.
+  </div>
+
+  <div id="uploadProgress" class="upload-progress" aria-live="polite" hidden>
+    <div class="upload-progress-top">
+      <span id="uploadProgressText">0%</span>
+      <span id="uploadProgressSize">0 MB / 0 MB</span>
+    </div>
+    <div class="upload-progress-track">
+      <div id="uploadProgressBar" class="upload-progress-bar"></div>
+    </div>
   </div>
 
 </section>
@@ -657,24 +705,31 @@ fileInput.addEventListener("change", async function(){
   const filePath =
     Date.now() + "_" + safeName;
 
-  const { data, error } =
-    await supabaseClient
-      .storage
-      .from(BUCKET)
-      .upload(filePath,file,{
-        contentType:file.type,
-        upsert:false
-      });
+  const progressBox = document.getElementById("uploadProgress");
+  const progressBar = document.getElementById("uploadProgressBar");
+  const progressText = document.getElementById("uploadProgressText");
+  const progressSize = document.getElementById("uploadProgressSize");
 
-  if(error){
+  progressBox.hidden = false;
+  progressBar.style.width = "0%";
+  progressText.textContent = "0%";
+  progressSize.textContent = "0 MB / " + formatBytes(file.size);
 
-    console.error(error);
+  statusBox.textContent = "Uploading " + file.name + "...";
 
+  const uploadResult = await uploadVideoWithProgress(file, filePath);
+
+  if(uploadResult.error){
+    console.error(uploadResult.error);
     statusBox.textContent =
-      "Upload failed: " + error.message;
-
+      "Upload failed: " + uploadResult.error.message;
     return;
   }
+
+  progressBar.style.width = "100%";
+  progressText.textContent = "100%";
+  progressSize.textContent =
+    formatBytes(file.size) + " / " + formatBytes(file.size);
 
   /*
     Use a signed URL for playback. This works for both public and
@@ -704,6 +759,86 @@ fileInput.addEventListener("change", async function(){
   fileInput.value = "";
 
 });
+
+function formatBytes(bytes){
+  if(bytes === 0) return "0 B";
+  const units = ["B","KB","MB","GB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return (bytes / Math.pow(1024,i)).toFixed(i === 0 ? 0 : 2) + " " + units[i];
+}
+
+function uploadVideoWithProgress(file, filePath){
+  return new Promise((resolve) => {
+    const xhr = new XMLHttpRequest();
+
+    const uploadUrl =
+      SUPABASE_URL +
+      "/storage/v1/object/" +
+      encodeURIComponent(BUCKET) +
+      "/" +
+      filePath.split("/").map(encodeURIComponent).join("/");
+
+    xhr.open("POST", uploadUrl, true);
+
+    xhr.setRequestHeader(
+      "Authorization",
+      "Bearer " + SUPABASE_ANON_KEY
+    );
+    xhr.setRequestHeader(
+      "apikey",
+      SUPABASE_ANON_KEY
+    );
+    xhr.setRequestHeader(
+      "Content-Type",
+      file.type || "application/octet-stream"
+    );
+    xhr.setRequestHeader("x-upsert", "false");
+
+    xhr.upload.addEventListener("progress", function(event){
+      if(!event.lengthComputable) return;
+
+      const percent = Math.round((event.loaded / event.total) * 100);
+
+      progressBar.style.width = percent + "%";
+      progressText.textContent = percent + "%";
+      progressSize.textContent =
+        formatBytes(event.loaded) + " / " + formatBytes(event.total);
+
+      statusBox.textContent =
+        "Uploading " + file.name + "... " + percent + "%";
+    });
+
+    xhr.onload = function(){
+      if(xhr.status >= 200 && xhr.status < 300){
+        resolve({data:true,error:null});
+      }else{
+        let message = "Upload failed (" + xhr.status + ")";
+        try{
+          const response = JSON.parse(xhr.responseText);
+          if(response.message) message = response.message;
+          else if(response.error) message = response.error;
+        }catch(e){}
+        resolve({data:null,error:new Error(message)});
+      }
+    };
+
+    xhr.onerror = function(){
+      resolve({
+        data:null,
+        error:new Error("Network error during upload.")
+      });
+    };
+
+    xhr.onabort = function(){
+      resolve({
+        data:null,
+        error:new Error("Upload was cancelled.")
+      });
+    };
+
+    xhr.send(file);
+  });
+}
 
 function addVideo(url,name){
 
