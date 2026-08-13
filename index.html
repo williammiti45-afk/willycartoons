@@ -676,13 +676,25 @@ fileInput.addEventListener("change", async function(){
     return;
   }
 
-  const { data:urlData } =
-    supabaseClient
+  /*
+    Use a signed URL for playback. This works for both public and
+    private Storage buckets as long as the SELECT policy exists.
+  */
+  const { data:urlData, error:urlError } =
+    await supabaseClient
       .storage
       .from(BUCKET)
-      .getPublicUrl(filePath);
+      .createSignedUrl(filePath, 3600);
 
-  const videoUrl = urlData.publicUrl;
+  if(urlError){
+    console.error(urlError);
+    statusBox.textContent =
+      "Upload succeeded, but playback URL could not be created: " +
+      urlError.message;
+    return;
+  }
+
+  const videoUrl = urlData.signedUrl;
 
   statusBox.textContent =
     "Video uploaded successfully!";
@@ -701,18 +713,26 @@ function addVideo(url,name){
   card.className = "video-card";
 
   card.innerHTML = `
-    <video controls preload="metadata">
-      <source src="${url}">
+    <video controls playsinline preload="metadata">
+      <source src="${url}" type="video/mp4">
+      Your browser could not load this video.
     </video>
 
     <div class="info">
       <strong>${escapeHtml(name)}</strong>
       <br><br>
-      <a href="${url}" target="_blank">
+      <a href="${url}" target="_blank" rel="noopener">
         Open video
       </a>
     </div>
   `;
+
+  const player = card.querySelector("video");
+
+  player.addEventListener("error", function(){
+    statusBox.textContent =
+      "The file uploaded, but the browser cannot play this video format/codec.";
+  });
 
   gallery.prepend(card);
 }
