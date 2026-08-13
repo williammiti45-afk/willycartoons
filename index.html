@@ -1601,43 +1601,6 @@ nav a[href="#upload"]{
 }
 
 
-.wc-mobile-menu{display:none}
-@media(max-width:700px){
-  .wc-mobile-menu{
-    display:flex;
-    width:42px;height:40px;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    gap:5px;
-    border:1px solid rgba(255,255,255,.14);
-    border-radius:12px;
-    background:rgba(255,255,255,.06);
-    cursor:pointer;
-    z-index:2005;
-  }
-  .wc-mobile-menu span{
-    width:18px;height:2px;
-    background:#fff;border-radius:2px;
-    transition:.2s;
-  }
-  header.wc-mobile-open nav{
-    display:flex !important;
-    position:absolute;
-    top:68px;left:12px;right:12px;
-    padding:8px !important;
-    flex-direction:column;
-    align-items:stretch;
-    border-radius:18px !important;
-    background:rgba(5,7,17,.96) !important;
-    box-shadow:0 25px 80px rgba(0,0,0,.55) !important;
-  }
-  header.wc-mobile-open nav a{
-    padding:13px 15px !important;
-  }
-  header.wc-mobile-open .wc-mobile-menu span:nth-child(1){transform:translateY(7px) rotate(45deg)}
-  header.wc-mobile-open .wc-mobile-menu span:nth-child(2){opacity:0}
-  header.wc-mobile-open .wc-mobile-menu span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
 }
 
 
@@ -1878,49 +1841,11 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
   }
 
   /* Clean hamburger; it opens the full navigation. */
-  .wc-mobile-menu{
-    display:flex!important;
-    flex:0 0 40px!important;
-    width:40px!important;
-    height:40px!important;
-    padding:0!important;
-    border:1px solid rgba(255,255,255,.20)!important;
-    border-radius:11px!important;
-    background:rgba(255,255,255,.08)!important;
-    align-items:center!important;
-    justify-content:center!important;
-    flex-direction:column!important;
-    gap:5px!important;
-  }
-  .wc-mobile-menu span{
-    display:block!important;
-    width:18px!important;
-    height:2px!important;
-    border-radius:2px!important;
-    background:#fff!important;
-  }
+  
+  
 
-  header.wc-mobile-open nav{
-    display:flex!important;
-    position:absolute!important;
-    top:68px!important;
-    left:10px!important;
-    right:10px!important;
-    padding:7px!important;
-    flex-direction:column!important;
-    align-items:stretch!important;
-    gap:3px!important;
-    border:1px solid rgba(255,255,255,.15)!important;
-    border-radius:16px!important;
-    background:rgba(5,7,17,.98)!important;
-    box-shadow:0 20px 55px rgba(0,0,0,.5)!important;
-    backdrop-filter:blur(18px)!important;
-  }
-  header.wc-mobile-open nav a{
-    display:flex!important;
-    padding:12px 14px!important;
-    font-size:13px!important;
-  }
+  
+  
 
   /* Player controls. They exist only on videos that have a neighbour. */
   .wc-mobile-player-nav{
@@ -1974,37 +1899,64 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
 @media (max-width:700px){
   #wcMobileQuickLinks{
     position:fixed!important;
-    top:74px!important;
+    top:72px!important;
     left:10px!important;
     right:10px!important;
+    width:auto!important;
+    max-width:calc(100vw - 20px)!important;
+    box-sizing:border-box!important;
     z-index:2147483001!important;
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
+    display:flex!important;
+    justify-content:center!important;
+    align-items:center!important;
     gap:7px!important;
-    padding:6px!important;
-    border-radius:15px!important;
-    background:rgba(5,7,17,.96)!important;
-    border:1px solid rgba(255,255,255,.16)!important;
-    box-shadow:0 12px 35px rgba(0,0,0,.38)!important;
-    backdrop-filter:blur(16px)!important;
+    padding:5px!important;
+    overflow:hidden!important;
+    border-radius:13px!important;
+    background:rgba(5,7,17,.94)!important;
+    border:1px solid rgba(255,255,255,.14)!important;
+    box-shadow:0 8px 24px rgba(0,0,0,.30)!important;
+    backdrop-filter:blur(14px)!important;
+    -webkit-backdrop-filter:blur(14px)!important;
   }
   #wcMobileQuickLinks a{
+    flex:0 1 50%!important;
+    width:50%!important;
+    min-width:0!important;
+    max-width:150px!important;
+    box-sizing:border-box!important;
+    min-height:34px!important;
+    padding:7px 10px!important;
     display:flex!important;
     align-items:center!important;
     justify-content:center!important;
-    min-height:38px!important;
-    border-radius:10px!important;
+    overflow:hidden!important;
+    white-space:nowrap!important;
+    text-overflow:ellipsis!important;
+    border-radius:9px!important;
     color:#fff!important;
     background:rgba(255,255,255,.08)!important;
     text-decoration:none!important;
-    font-size:12px!important;
+    font-size:11px!important;
+    line-height:1!important;
     font-weight:800!important;
   }
-  #wcMobileQuickLinks a:active{
-    transform:scale(.98);
-    background:rgba(255,255,255,.14)!important;
+  body{padding-top:54px!important;overflow-x:hidden!important}
+}
+@media (max-width:380px){
+  #wcMobileQuickLinks{
+    left:8px!important;
+    right:8px!important;
+    max-width:calc(100vw - 16px)!important;
+    gap:5px!important;
+    padding:4px!important;
   }
-  body{padding-top:58px!important}
+  #wcMobileQuickLinks a{
+    max-width:none!important;
+    min-height:32px!important;
+    padding:6px 7px!important;
+    font-size:10px!important;
+  }
 }
 @media (min-width:701px){
   #wcMobileQuickLinks{display:none!important}
@@ -2025,9 +1977,6 @@ body>header,body>main,body>footer,body>.modal,body>.admin-panel,body>.cookie-ban
 <a href="#videos"><span><span data-i18n="videos">Videos</span></span></a>
 <a href="#contact"><span><span data-i18n="contact">Contact</span></span></a>
 </nav>
-<button aria-expanded="false" aria-label="Open menu" class="wc-mobile-menu" id="wcMobileMenu" type="button">
-<span></span><span></span><span></span>
-</button>
 </header>
 <section class="hero">
 <div class="hero-orb"></div><div class="eyebrow"><span class="dot"></span> <span><span data-i18n="hero">THE CREATIVE HOME FOR CARTOON VIDEOS</span></span></div><h1><span><span><span data-i18n="turn">Turn your ideas into</span></span></span> <span><span><span data-i18n="cartoons">cartoons.</span></span></span></h1>
